@@ -1,0 +1,120 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║           5-STEP CYCLE TOY EXAMPLE FOR IMPOSSIBILITY THEOREM                ║
+║                                                                              ║
+║  Paper: Sudoma, O. (2025). Scalar Impossibility in Multi-Pillar Complexity  ║
+║  DOI: 10.5281/zenodo.17436068                                               ║
+║                                                                              ║
+║  Demonstrates: No universal scalar complexity measure can satisfy both      ║
+║                monotonicity and isomorphism invariance                      ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+    
+
+============================================================
+RUNNING ORACLE TESTS (SOP Section 5.3)
+============================================================
+
+============================================================
+Oracle Test 1: f_alg increases C_alg
+============================================================
+C_alg(X_0) = -0.000
+C_alg(X_1) = 0.201
+Increase: δ_alg = 0.201
+Required: δ_alg ≥ 0.200
+✓ Oracle test passed: C_alg increased by 0.201
+
+============================================================
+Oracle Test 2: f_info increases C_info
+============================================================
+C_info(X_1) = 0.150
+C_info(X_2) = 0.433
+Increase: δ_info = 0.283
+Required: δ_info ≥ 0.200
+✓ Oracle test passed: C_info increased by 0.283
+
+============================================================
+Oracle Test 3: f_dyn increases C_dyn
+============================================================
+C_dyn(X_2) = 0.200
+C_dyn(X_3) = 1.000
+Increase: δ_dyn = 0.800
+Required: δ_dyn ≥ 0.300
+✓ Oracle test passed: C_dyn increased by 0.800
+
+============================================================
+Oracle Test 4: T_a increases C_geom
+============================================================
+C_geom(Disk) = 0.000
+C_geom(Annulus) = 1.000
+Increase: δ_geom = 1.000
+Required: δ_geom ≥ 0.300
+✓ Oracle test passed: C_geom increased by 1.000
+
+============================================================
+ALL ORACLE TESTS PASSED ✓
+============================================================
+
+============================================================
+5-STEP CYCLE IMPOSSIBILITY DEMONSTRATION
+============================================================
+Paper: Sudoma (2025), DOI: 10.5281/zenodo.17436068
+Theorem 1: No Universal Complexity Scalar Exists
+============================================================
+
+Cycle Evolution:
+------------------------------------------------------------
+Step                    C_alg   C_info    C_dyn   C_geom
+------------------------------------------------------------
+X_0 (Initial)          -0.000    0.000    0.100    0.078
+X_1 (f_alg)             0.201    0.150    0.100    0.000
+X_2 (f_info)            0.295    0.433    0.200    0.000
+X_3 (f_dyn)             0.257    0.433    1.000    0.027
+X_4 (f_geom)            0.257    0.433    1.000    1.000
+X_0' (φ closing)       -0.000    0.000    0.100    0.078
+------------------------------------------------------------
+
+Pillar Increases:
+------------------------------------------------------------
+Step 1 (f_alg):   C_alg  increased by +0.201
+Step 2 (f_info):  C_info increased by +0.283
+Step 3 (f_dyn):   C_dyn  increased by +0.800
+Step 4 (f_geom):  C_geom increased by +0.973
+Step 5 (φ):       All pillars return to X_0 values
+------------------------------------------------------------
+
+Total pillar increases (Steps 1-4): Σδ_• ≈ 2.628
+Expected minimum: Σδ_• ≥ 1.000
+
+============================================================
+CONTRADICTION:
+============================================================
+
+Any universal scalar C* must satisfy:
+1. Monotonicity (Axiom A2): C*(X_i+1) ≥ C*(X_i) for each morphism
+   ⟹ C*(X_4) ≥ C*(X_0) + 1.0
+
+2. Isomorphism invariance (Axiom A5): C*(φ(X)) = C*(X)
+   Since φ(X_4) = X_0 exactly:
+   ⟹ C*(X_4) = C*(X_0)
+
+Combining:
+   C*(X_0) = C*(X_4) ≥ C*(X_0) + 1.0
+   ⟹ C*(X_0) ≥ C*(X_0) + 1.0
+   ⟹ 0 ≥ 1.0  ✗ CONTRADICTION
+
+============================================================
+CONCLUSION: No universal scalar complexity measure C* can exist!
+============================================================
+
+✓ Impossibility theorem validated numerically
+
+============================================================
+EXECUTION COMPLETE
+============================================================
+
+For details, see:
+- Paper: no_go_universal_complexity_scalar_v9.pdf
+- Mathematical spec: TOY_EXAMPLE_MATHEMATICAL_FORMALISM.md
+- Code repository: https://github.com/boonespacedog/complexity-vector-1
