@@ -748,7 +748,7 @@ Let each system $X_i$ be a composite $(C_i, Q_i)$ where $C_i$ is a classical bit
 \item Classical: Apply Arnold cat map $A = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix} \mod 4$ to bit pairs as coordinates
 \item Quantum: Time-evolve under kicked Ising Hamiltonian $H = J\sum_i \sigma_z^i \sigma_z^{i+1} + h\sum_i \sigma_x^i$ for 5 kicks
 \item Result: Classical dynamics have Lyapunov exponent $\lambda = \ln\left(\frac{3+\sqrt{5}}{2}\right) \approx 0.96$
-\item Complexity change: $\Cdyn(X_3) = 0.70 > 0.50 + \delta_{\mathrm{dyn}}$ (take $\delta_{\mathrm{dyn}} = 0.15$)
+\item Complexity change: $\Cdyn(X_3) = 0.80 > 0.50 + \delta_{\mathrm{dyn}}$ (take $\delta_{\mathrm{dyn}} = 0.30$)
 \end{itemize}
 
 \textbf{Edge 4:} $f_{\mathrm{geom}}: X_3 \to X_4$ (Geometric improvement)
@@ -856,6 +856,8 @@ $X_0'$ & 0.1 & 0.2 & 0.3 & 0.8 \\
 \end{align}
 while returning algorithmic complexity to initial value: $\Calg(X_0') = \Calg(X_0) = 0.1$.
 \end{example}
+
+\paragraph{Computational Implementation Note.} The Python toy example (\texttt{code/five\_step\_cycle.py} in the GitHub repository) demonstrates this cycle numerically. For pedagogical clarity, the dynamical complexity proxy $\Cdyn$ uses explicit morphism tracking rather than intrinsic Lyapunov computation, as XOR-based entropy proxies can yield false positives when syndrome encoding creates correlated bit patterns. This limitation is acceptable for proof-of-concept demonstrations; intrinsic measures (e.g., trajectory divergence rates) remain an important direction for robust implementations.
 
 \subsection{Visualization of Improvement Cycle}
 

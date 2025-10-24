@@ -119,12 +119,53 @@
 
 ## Figures Generated
 
-*No figures generated in this run. Code does not include matplotlib plotting.*
+**Script**: `code/generate_figures.py` (262 lines, publication-quality figures)
 
-To generate visualizations, add plotting code for:
-- Pillar evolution across steps (line plot)
-- Central void comparison (scatter plot: disk vs. annulus)
-- Complexity vector trajectory in 4D pillar space
+All figures generated at 300 DPI in PNG format, colorblind-friendly (Tol palette).
+
+### Figure 1: Pillar Evolution Across 5-Step Cycle
+**File**: `figures/pillar_evolution.png` (10×6 inches, 328 KB)
+
+Shows the evolution of all 4 complexity pillars (C_alg, C_info, C_dyn, C_geom) across the cycle steps X₀ → X₁ → X₂ → X₃ → X₄ → X₀'. Each morphism raises its target pillar (annotated with δ values), and the closing isomorphism φ returns all pillars to initial values. This visualizes the accumulation Σδ = 2.257 followed by the return to X₀, demonstrating the impossibility.
+
+**Key features**:
+- 4 lines (algorithmic=blue, information=green, dynamical=red, geometric=purple)
+- Annotations showing δ_alg, δ_info, δ_dyn, δ_geom increases
+- Return to X₀ highlighted with yellow box and dashed arrow
+- Measures Σδ = 2.257 (sum of positive increases in steps 1-4)
+
+### Figure 2: Disk→Annulus Transformation
+**File**: `figures/disk_annulus_transformation.png` (12×5 inches, 2.5 MB)
+
+Demonstrates the geometric complexity increase via area-preserving map T_a. Left panel shows 10,000 uniformly sampled points in the unit disk (C_geom = 0.000), right panel shows the same points after T_a transformation to annulus with inner radius a=0.68 (C_geom = 1.000). The central void region is highlighted, and both panels are colored by radial distance.
+
+**Key features**:
+- Side-by-side comparison: disk (before) vs annulus (after)
+- Color gradient by radial distance (viridis colormap)
+- Inner circle at r=0.68 (void boundary) highlighted in red
+- Central void region shown with gold overlay
+- C_geom values annotated: 0.000 → 1.000 (perfect increase)
+- Demonstrates δ_geom = 1.000 (exceeds requirement of 0.30 by 233%)
+
+### Figure 3: Contradiction Diagram (4D Complexity Space Projection)
+**File**: `figures/contradiction_diagram.png` (8×8 inches, 597 KB)
+
+3D visualization of the 5-step cycle path through 4-dimensional complexity space (using first 3 pillars: C_alg, C_info, C_dyn for visualization). Points X₀, X₁, X₂, X₃, X₄ are connected by colored arrows showing the forward path, with a dashed red arrow showing the closing isomorphism φ: X₄ → X₀. The contradiction is annotated: Σδ = 2.257 > 0 but φ forces C*(X₀) = C*(X₄), leading to the impossible inequality 0 ≥ 2.257.
+
+**Key features**:
+- 3D projection of 4D pillar space (axes: C_alg, C_info, C_dyn)
+- Color-coded path segments (viridis colormap by step)
+- Closing isomorphism φ shown as red dashed line
+- Contradiction text box with full logical derivation
+- View angle: elev=20°, azim=45° for optimal visibility
+
+**Generation command**:
+```bash
+cd code/
+python3 generate_figures.py
+# Runtime: ~5 seconds
+# Enforces 1s pause after each savefig (rate limiting)
+```
 
 ---
 

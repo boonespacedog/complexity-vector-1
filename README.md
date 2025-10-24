@@ -54,8 +54,12 @@ pip install -r requirements.txt
 
 **Usage**:
 ```bash
+# Run main demonstration
 cd code/
 python3 five_step_cycle.py
+
+# Generate figures (300 DPI, publication quality)
+python3 generate_figures.py
 ```
 
 **Expected output**:
@@ -63,6 +67,11 @@ python3 five_step_cycle.py
 - 5-step cycle evolution table
 - Pillar increase summary
 - Logical contradiction demonstration
+
+**Figures generated** (via `generate_figures.py`):
+- `figures/pillar_evolution.png` - 4-pillar complexity evolution across cycle
+- `figures/disk_annulus_transformation.png` - Geometric complexity increase visualization
+- `figures/contradiction_diagram.png` - 3D projection of 4D complexity space path
 
 See `outputs/DEMONSTRATION_RESULTS.md` for detailed results and analysis.
 
