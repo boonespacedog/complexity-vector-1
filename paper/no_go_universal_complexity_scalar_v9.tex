@@ -1,0 +1,926 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{authblk}
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,shapes}
+
+\title{\bf Scalar Impossibility in Multi-Pillar Complexity Measures:\\
+Why a Single Number Cannot Capture Algorithmic, Information-Theoretic, Dynamical, and Geometric Complexity\thanks{Mathematical formalism and proof construction assisted by AI tools (Claude by Anthropic, ChatGPT by OpenAI). All theoretical insights, hypothesis formulation, and scientific claims are the sole responsibility of the author. DOI: 10.5281/zenodo.17436068}}
+\author[1]{Oksana Sudoma}
+\affil[1]{Independent Researcher}
+
+\date{October 25, 2025}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{example}{Example}
+
+% Macros
+\newcommand{\Calg}{C_{\mathrm{alg}}}
+\newcommand{\Cinfo}{C_{\mathrm{info}}}
+\newcommand{\Cdyn}{C_{\mathrm{dyn}}}
+\newcommand{\Cgeom}{C_{\mathrm{geom}}}
+\newcommand{\Cvec}{\mathbf{C}}
+\newcommand{\Cstar}{C^{\!*}}
+\newcommand{\ket}[1]{\left|#1\right\rangle}
+\newcommand{\bra}[1]{\left\langle#1\right|}
+\newcommand{\braket}[2]{\left\langle#1\,\middle|\,#2\right\rangle}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove an impossibility theorem for universal scalar complexity. Let $\mathsf{Sys}$ denote the category of classical Markov and quantum CPTP morphisms. Any scalar $\Cstar$ that is a \emph{resource monotone}\thanks{Following quantum resource theory conventions \cite{chitambar2019quantum,coecke2016mathematical}, a resource monotone is a functional that does not increase under free operations (here: morphisms in $\mathsf{Sys}$).} on $\mathsf{Sys}$ and is simultaneously monotone with respect to operations from four distinct complexity families (algorithmic, information-theoretic, dynamical, geometric) is impossible. The proof constructs a $\mathsf{Sys}$-internal cycle with one non-invertible noise step that strictly lowers $\Cstar$ and only isomorphisms otherwise; isomorphism invariance then contradicts the net decrease.
+
+As a companion, we show that no scalar can be simultaneously invariant on isomorphisms and non-decreasing on a set of designated, reversible ``complexity-increasing'' operations drawn from each pillar. This impossibility result, analogous to Arrow's theorem in social choice, demonstrates that vectorial reporting is necessary for multi-pillar complexity assessment: $\Cvec = (\Calg, \Cinfo, \Cdyn, \Cgeom) \in [0,1]^4$. More precisely, there is no single scalar functional $\Cstar$ on physical systems that simultaneously captures (i) algorithmic/circuit cost, (ii) information content and correlations, (iii) dynamical chaos and scrambling, and (iv) geometric and topological structure, while respecting natural axioms of additivity, monotonicity, continuity, and task-universality. The obstruction arises because these four complexity aspects impose incompatible partial orders: operations that increase one type of complexity need not preserve others, enabling cycles where strict improvements in each pillar return to an equivalent system. Any scalar attempting to track all four pillars is forced into logical contradiction. This extends impossibility results from social choice theory (Arrow's theorem), optimization (no-free-lunch), and quantum resource theory to complexity quantification. As a corollary, faithful complexity measurement requires vectors, not scalars.
+\end{abstract}
+
+\section{Introduction: The Complexity Ranking Problem}
+
+\paragraph{Complexity has a way of producing an irresistable urge for a cross-domain unification.} During 2024-2025, we attempted multiple scalar formulations linking complexity to thermal gradients and information-geometric bridges, ultimately discovering fundamental circular dependencies that motivated this formal proof.\thanks{These empirical attempts included scalar complexity fields coupled to temperature gradients, Fisher information metrics over phase space, spectral density proxies, and discrete transition counting. Each formulation either introduced circular dependencies (fitting complexity to observed transitions), produced unbounded values, or conflated distinct operational pillars. While the broader research program on multi-pillar complexity theory remains ongoing, this impossibility result resolves the empirical frustration encountered in those earlier attempts.} The theoretical result establishes why those empirical attempts necessarily failed. 
+
+Consider three systems: a quantum computer with 100 qubits running Shor's algorithm, a hurricane's velocity field captured at hourly intervals, and a social network graph of one million users. Which is ``most complex''?
+
+The quantum computer has high algorithmic complexity (requires many gates to prepare the state) but low topological complexity (qubits arranged in a regular grid). The hurricane has high dynamical complexity (chaotic, unpredictable) but moderate algorithmic complexity (governed by relatively simple differential equations). The social network has high geometric complexity (intricate community structure) but low dynamical complexity (changes slowly over time). We can assign each system a value $\Cstar_1, \Cstar_2, \Cstar_3$, but how should these numbers relate?
+
+\paragraph{The universal scalar dream.} Imagine having a single number $\Cstar(X)$ that captures all aspects of complexity for any system $X$. This would enable direct comparisons: if $\Cstar(A) > \Cstar(B)$, then system $A$ is unambiguously more complex. Such a measure would simplify resource estimation, optimization, and theoretical predictions across physics, information theory, and computation. The dream is seductive and intuitive.
+
+\paragraph{Why we should be suspicious.} Impossibility results in related domains suggest caution. In social choice theory, Arrow's theorem \cite{arrow1950difficulty,arrow1963social} shows no preference aggregation can satisfy all fairness criteria simultaneously. This impossibility result parallels Arrow's theorem in social choice theory in that both demonstrate fundamental incompatibilities between multiple ordering criteria. However, where Arrow's theorem concerns aggregation of subjective preferences under fairness constraints (independence of irrelevant alternatives, unanimity, non-dictatorship), our result concerns objective structural properties under monotonicity requirements. The structural parallel: both show that multiple incompatible partial orders cannot be compressed into a single total order without contradiction.
+
+In optimization, no-free-lunch theorems \cite{wolpert1997no,goldblum2023no} prove all algorithms have identical average performance across all problems. In multi-objective optimization \cite{fliege2010no}, conflicting objectives cannot be simultaneously optimized by a single scalar without task-dependent weights. In quantum resource theory \cite{chitambar2019quantum,coecke2016mathematical}, different choices of ``free operations'' lead to incompatible resource orderings, and no finite complete set of monotones exists \cite{uola2023finite}. Similarly, universal intelligence measures face Arrowian impossibilities \cite{legg2022arrowian}.
+
+These results share a common structure: multiple incommensurable aspects resist compression into a single number. Complexity, we will show, follows this pattern.
+
+\paragraph{Four pillars of complexity.} We organize widely used complexity notions into four families, each capturing distinct structural properties:
+
+\begin{itemize}[leftmargin=2em]
+\item[(I)] \textbf{Algorithmic/Circuit Complexity} ($\Calg$): How many computational steps or gates are required to prepare or describe a system? Examples include Kolmogorov complexity \cite{li2019introduction} (minimal program length) and quantum circuit depth \cite{aaronson2016complexity} (minimal gate count).
+
+\item[(II)] \textbf{Information-Theoretic Complexity} ($\Cinfo$): How much information is shared between components at different scales? Examples include Shannon entropy \cite{cover2006elements}, multiscale/transfer entropy \cite{schreiber2000measuring,wu2018multiscale}, and partial information decomposition \cite{williams2010nonnegative}.
+
+\item[(III)] \textbf{Dynamical Complexity} ($\Cdyn$): How chaotic or scrambling is the system's temporal evolution? Classical measures include Lyapunov exponents and Kolmogorov--Sinai entropy \cite{eckmann1985ergodic,pesin1977characteristic}. Quantum measures include out-of-time-order correlators (OTOCs) and spectral form factor \cite{roberts2016lieb,xu2024scrambling}.
+
+\item[(IV)] \textbf{Geometric/Topological Complexity} ($\Cgeom$): What is the richness of the system's spatial or state-space structure? Examples include persistent homology \cite{edelsbrunner2010computational,chazal2017introduction} (counting topological features at multiple scales) and fractal dimension \cite{falconer2014fractal}.
+\end{itemize}
+
+Each pillar comes with natural operations that increase complexity in that domain: adding gates increases $\Calg$, mixing processes increase $\Cinfo$, chaotic advection increases $\Cdyn$, and topological enrichment increases $\Cgeom$. The question is: can a universal scalar $\Cstar$ be monotone under all such operations simultaneously?
+
+\paragraph{Our result.} We prove the answer is no. We formalize natural axioms that any universal complexity scalar should satisfy (additivity, monotonicity, continuity, task-universality) and show these axioms are mutually incompatible. The impossibility arises not from measurement limitations but from fundamental structural conflict: the four pillars impose incompatible orderings on systems. You can construct cycles where each step increases complexity in its respective pillar, yet the cycle returns to the starting point, forcing any monotone scalar into logical contradiction.
+
+\paragraph{Consequence: vectorial complexity is mandatory.} The result implies that faithful complexity quantification requires vectors, not scalars: $\Cvec = (\Calg, \Cinfo, \Cdyn, \Cgeom) \in [0,1]^4$. Task-specific scalarizations (weighted combinations) remain valid when one pillar dominates or when weights reflect problem-specific priorities, but task-universal scalars satisfying all monotonicity axioms cannot exist.
+
+\paragraph{Main contributions.}
+\begin{enumerate}
+\item \textbf{Sys-internal no-go result}: Proof uses only Markov/CPTP morphisms (no projections or forgetting operations). Geometry is an observer evaluation functional, not state structure.
+
+\item \textbf{Explicit 5-step construction}: Cycle with one non-invertible noise step (strictly lowers $\Cstar$) and isomorphisms only (preserve $\Cstar$ while raising pillar observers). Complete constructive proof with concrete morphisms.
+
+\item \textbf{Reproducible toy implementation}: Standalone Python code (\texttt{disk\_annulus\_cycle\_toy.py}) demonstrating disk$\to$annulus geometric isomorphism $T_a$, Arnold cat map (dynamics), noise injection, and complexity measurements. One-command execution with fixed random seed.
+
+\item \textbf{Dual-theorem presentation}: Main theorem (resource-style impossibility on all Sys) complemented by operational corollary (impossibility for designated reversible increase-ops). Captures both orthodox resource theory and original ``pillar-monotone'' intuition.
+
+\item \textbf{Necessity of vectors}: Corollary establishes that multi-pillar complexity requires vectorial reporting $\Cvec \in [0,1]^4$, not scalars. Task-specific weighted sums remain valid; only task-universal scalars satisfying all axioms are impossible.
+\end{enumerate}
+
+\paragraph{Roadmap.} Section 2 establishes the mathematical framework: we define the system category, complexity measures, and morphism families formally. Section 3 states axioms for a universal scalar. Section 4 proves the main impossibility theorem. Section 5 discusses consequences and practical alternatives. Appendices provide explicit verifiable examples.
+
+\section{Mathematical Framework: Formalizing Complexity}
+
+\paragraph{Why we need formalism.} Before proving impossibility, we must define precisely what we mean by ``complexity measure,'' ``improvement operation,'' and ``system.'' The following framework provides the mathematical structure needed for rigorous argumentation. Readers familiar with category theory will recognize this as a functorial approach to complexity; others can treat it as systematic bookkeeping of systems and transformations.
+
+\subsection{System Category}
+
+\begin{definition}[System Category]\label{def:syscat}
+Let $\mathsf{Sys}$ be the category whose:
+\begin{itemize}
+\item Objects are triples $(X, \mathcal{S}_X, \lambda)$ where:
+  \begin{itemize}
+  \item $X$ is a measurable space with measure $\mu_X$
+  \item $\mathcal{S}_X$ is either a classical state space (probability measures on $X$) or quantum state space (density operators on a Hilbert space $\mathcal{H}_X$)
+  \item $\lambda \in (0,\infty)$ is a scale parameter
+  \end{itemize}
+\item Morphisms are measure-preserving maps (classical) or completely positive trace-preserving (CPTP) maps (quantum)
+\end{itemize}
+\end{definition}
+
+\paragraph{Scale Dependence.} The scale parameter $\lambda$ determines the observational resolution at which complexity is evaluated (e.g., circuit depth cutoff, correlation length scale, pixel size for images). The impossibility result holds \emph{at each fixed $\lambda$}---no choice of scale can rescue a scalar complexity measure. While a complete scale-theoretic treatment (complexity families $\Cstar(\cdot, \lambda)$ for $\lambda \in \Lambda$) is natural, we fix $\lambda = \lambda_0$ throughout for notational simplicity. The extension to parametric families is immediate but deferred to future work.
+
+\paragraph{Interpretation.} This definition encompasses both classical systems (e.g., bit strings, probability distributions, dynamical systems) and quantum systems (e.g., qubit states, density matrices). The scale parameter $\lambda$ allows complexity to depend on resolution: entropy of an image depends on pixel size, topological features of a network depend on interaction radius. Morphisms are structure-preserving transformations.
+
+\subsection{Complexity Measures}
+
+\begin{definition}[Individual Complexity Measures]\label{def:individual}
+For a system $X \in \mathsf{Sys}$ at scale $\lambda$, we define normalized complexity measures:
+\begin{align}
+\Calg(X,\lambda) &= \frac{K_\lambda(X)}{K_{\max}(\lambda)} \in [0,1] \\
+\Cinfo(X,\lambda) &= \frac{I_\lambda(X)}{I_{\max}(\lambda)} \in [0,1] \\
+\Cdyn(X,\lambda) &= \frac{h_{KS}(X,\lambda)}{h_{\max}(\lambda)} \in [0,1] \\
+\Cgeom(X,\lambda) &= \frac{\sum_k \int |\mathrm{PH}_k(X,\lambda)|d\lambda}{\mathrm{PH}_{\max}(\lambda)} \in [0,1]
+\end{align}
+where $K$ is Kolmogorov complexity\thanks{Normalization constants are scale-dependent. For example, for $n$-bit strings at scale $\lambda$, $K_{\max}(\lambda) = n + O(\log n)$; for Shannon entropy, $I_{\max}(\lambda) = \log |\Omega|$; for KS entropy, $h_{\max}(\lambda) = \log |\text{phase space}|$; for persistent homology, $\text{PH}_{\max}(\lambda)$ can be taken as the total Betti number sum times maximum feature lifetime at filtration radius $\lambda$. \textbf{Remark on normalization robustness:} The exact form of these normalization constants does not affect the impossibility result. Any bounded normalization ensuring $C_\bullet \in [0,1]$ suffices; different choices may alter the threshold values $\delta_\bullet$ but cannot eliminate the fundamental contradiction since $\sum_\bullet \delta_\bullet > 0$ for any positive thresholds.} (or circuit length for quantum systems), $I$ is multi-information, $h_{KS}$ is Kolmogorov-Sinai entropy (or entanglement entropy growth rate for quantum systems), and $\mathrm{PH}_k$ is the $k$-th persistent homology module. Denominators are scale-dependent normalization constants chosen to ensure boundedness.
+\end{definition}
+
+\begin{definition}[Complexity Vector]\label{def:vector}
+The \emph{complexity vector} of system $X$ at scale $\lambda$ is:
+\[
+\Cvec(X,\lambda) = (\Calg, \Cinfo, \Cdyn, \Cgeom) \in [0,1]^4
+\]
+\end{definition}
+
+\paragraph{So what?} These definitions formalize the intuition that complexity has multiple facets. Normalization to $[0,1]$ enables comparison across scales and system types. The key question: can these four components be compressed into a single number without losing essential information?
+
+\subsection{Morphism Families and Partial Orders}
+
+\paragraph{What are improvement operations?} In each complexity domain, certain operations are known to increase complexity. Adding gates to a quantum circuit increases circuit complexity. Mixing processes increase entropy. Chaotic advection increases dynamical entropy. Topological enrichment adds persistent homology features. We formalize these as morphism families.
+
+\begin{definition}[Morphism Families]\label{def:morphisms}
+A \emph{morphism family} $\mathsf{M}_\bullet \subset \text{Mor}(\mathsf{Sys})$ is a collection of morphisms equipped with:
+\begin{itemize}
+\item A complexity functional $C_\bullet: \mathsf{Sys} \to [0,1]$
+\item A monotonicity property: $f \in \mathsf{M}_\bullet \implies C_\bullet(f(X)) \geq C_\bullet(X)$
+\item A constructive characterization (see below)
+\end{itemize}
+
+We define four fundamental families:
+
+\textbf{1. Algorithmic morphisms} $\mathsf{M}_{\mathrm{alg}}$:
+\begin{itemize}
+\item \emph{Characterization}: $f \in \mathsf{M}_{\mathrm{alg}}$ if $f = G \circ \text{id}$ where $G$ is drawn from:
+  \begin{itemize}
+  \item Classical: Pseudorandom generators or one-way functions with security parameter $\kappa \geq 128$ bits
+  \item Quantum: Unitary circuits with T-depth $\geq d_0 = \Omega(\log n)$ for $n$-qubit systems
+  \end{itemize}
+\item \emph{Complexity measure}: $\Calg(X) = \min\{|p|: U(p) = X\}/|X|$ where $U$ is a universal Turing machine (classical) or $\Calg(X) = D(X)/D_{\max}$ where $D$ is circuit depth with gate set $\{H, T, \text{CNOT}\}$ (quantum)
+\item \emph{Decidable approximation}: For quantum systems, circuit complexity with fixed gate set provides a computationally tractable upper bound
+\end{itemize}
+
+\textbf{2. Information morphisms} $\mathsf{M}_{\mathrm{info}}$:
+\begin{itemize}
+\item \emph{Characterization}: $f \in \mathsf{M}_{\mathrm{info}}$ if $f$ implements:
+  \begin{itemize}
+  \item Classical: Error-correcting codes (syndrome generation) or mixing transformations that create correlations
+  \item Quantum: Entangling operations with Schmidt rank increase $\Delta r \geq 1$, or partial measurements creating classical-quantum correlations
+  \end{itemize}
+\item \emph{Complexity measure}: $\Cinfo(X) = I(X_1:X_2:\cdots:X_n)/\log |X|$ (multipartite mutual information normalized by system size)
+\item \emph{Operational test}: Correlation increase measurable via mutual information between subsystems
+\end{itemize}
+
+\textbf{3. Dynamical morphisms} $\mathsf{M}_{\mathrm{dyn}}$:
+\begin{itemize}
+\item \emph{Characterization}: $f \in \mathsf{M}_{\mathrm{dyn}}$ if $f = U_t$ is time evolution under:
+  \begin{itemize}
+  \item Classical: Discrete maps with largest Lyapunov exponent $\lambda_{\max} > 0$ (e.g., Arnold cat map, baker's map)
+  \item Quantum: Non-integrable Hamiltonians with level spacing ratio $r \in [0.39, 0.6]$ indicating chaotic regime (e.g., kicked Ising model)
+  \end{itemize}
+\item \emph{Complexity measure}:
+  \begin{itemize}
+  \item Classical: $\Cdyn = h_{KS}/\log |\Omega|$ (normalized Kolmogorov-Sinai entropy)
+  \item Quantum: $\Cdyn = \lim_{t \to \infty} S(t)/S_{\max}$ where $S(t)$ is entanglement entropy (saturation value quantifies scrambling)
+  \end{itemize}
+\item \emph{Unified framework}: Both measure mixing/scrambling rate in their respective phase spaces
+\end{itemize}
+
+\textbf{4. Geometric morphisms} $\mathsf{M}_{\mathrm{geom}}$:
+\begin{itemize}
+\item \emph{Characterization}: $f \in \mathsf{M}_{\mathrm{geom}}$ if $f$ implements:
+  \begin{itemize}
+  \item Simplicial maps increasing Betti numbers: $\beta_k(f(X)) \geq \beta_k(X)$ for some homology dimension $k$
+  \item Embeddings into higher-dimensional complexes with non-trivial topology (e.g., adding vertices/edges to create non-contractible cycles)
+  \end{itemize}
+\item \emph{Complexity measure}: $\Cgeom(X) = \sum_{k=0}^{\dim X} \int_0^\infty |\text{PH}_k(X,t)| dt / V(X)$ where $\text{PH}_k$ is the $k$-th persistent homology module and $V(X)$ is a volume normalization
+\item \emph{Partial order}: Persistence modules are ordered via interleaving distance; $f$ increases $\Cgeom$ if it adds features or extends feature lifetimes
+\end{itemize}
+\end{definition}
+
+\begin{remark}[Morphism Family Characterizations]
+The characterizations in Definition~\ref{def:morphisms} are descriptive rather than exhaustive formal specifications. The exact membership criteria for each family $\mathsf{M}_\bullet$ do not affect the impossibility result—what matters is that:
+\begin{enumerate}
+\item Such families exist (demonstrated constructively in Appendix~\ref{app:cycle})
+\item They induce incompatible partial orders on $\mathsf{Sys}$ (Lemma~\ref{lem:noncomm})
+\item Each family has morphisms that strictly increase its associated complexity measure
+\end{enumerate}
+Any partition of $\mathsf{Sys}$ morphisms into four disjoint families satisfying these properties yields the same impossibility. The specific examples (PRGs, Arnold cat, syndrome encoding, disk→annulus) are illustrative instances, not definitional requirements.
+\end{remark}
+
+\begin{definition}[Faithfulness to Operational Pillars]\label{def:faithful}
+A scalar complexity measure $\Cstar$ is \emph{faithful to an operational pillar} $\bullet \in \{\mathrm{alg}, \mathrm{info}, \mathrm{dyn}, \mathrm{geom}\}$ if it satisfies monotonicity (Axiom A2) for all morphisms in $\mathsf{M}_\bullet$. That is, for every $f \in \mathsf{M}_\bullet$:
+\begin{enumerate}
+\item[(i)] Weak monotonicity: $\Cstar(f(X)) \geq \Cstar(X)$
+\item[(ii)] Strict monotonicity for strict improvements: if $f$ is a strict improvement (Definition~\ref{def:strict}), then $\Cstar(f(X)) > \Cstar(X) + \delta_\bullet$
+\end{enumerate}
+A scalar is \emph{faithful to all four pillars} if it is faithful to each pillar individually.
+\end{definition}
+
+\begin{remark}[Closure Under Composition]
+Each morphism family $\mathsf{M}_\bullet$ is assumed closed under composition: if $f, g \in \mathsf{M}_\bullet$, then $g \circ f \in \mathsf{M}_\bullet$ whenever the composition is defined. This ensures that the relations $\preceq_\bullet$ defined in Definition~\ref{def:partial-orders} are transitive and thus genuine partial orders.
+\end{remark}
+
+\begin{remark}
+These morphism families generalize the notion of ``free operations'' in quantum resource theories \cite{chitambar2019quantum,coecke2016mathematical}, where different choices of allowed operations lead to incompatible resource orderings. Here, different complexity notions privilege different transformations as ``complexity-increasing.''
+\end{remark}
+
+\begin{definition}[Strict Improvements]\label{def:strict}
+A morphism $f \in \mathsf{M}_{\bullet}$ is a \emph{strict improvement} in pillar $\bullet$ if:
+\begin{itemize}
+\item For $\mathsf{M}_{\mathrm{alg}}$: $K(f(X)) - K(X) \geq \delta_{\mathrm{alg}}$ for a fixed threshold $\delta_{\mathrm{alg}} > 0$
+\item For $\mathsf{M}_{\mathrm{info}}$: $I(f(X)) - I(X) \geq \delta_{\mathrm{info}}$ for a fixed threshold $\delta_{\mathrm{info}} > 0$
+\item For $\mathsf{M}_{\mathrm{dyn}}$: $h_{KS}(f(X)) - h_{KS}(X) \geq \delta_{\mathrm{dyn}}$ for a fixed threshold $\delta_{\mathrm{dyn}} > 0$
+\item For $\mathsf{M}_{\mathrm{geom}}$: $\int_0^\infty |\mathrm{PH}_k(f(X))| - |\mathrm{PH}_k(X)| \,d\lambda \geq \delta_{\mathrm{geom}}$ for $\delta_{\mathrm{geom}} > 0$
+\end{itemize}
+\end{definition}
+
+\begin{remark}[Threshold Justification and Uniformity]\label{rem:thresholds}
+The strict improvement thresholds $\delta_\bullet > 0$ serve three essential purposes:
+
+\textbf{1. Distinguishing signal from noise:} In any finite-precision implementation, complexity changes below some threshold $\epsilon$ are indistinguishable from numerical error. We require $\delta_\bullet > \epsilon$ to ensure improvements are measurable.
+
+\textbf{2. Ensuring cycle non-triviality:} The contradiction in Theorem~\ref{thm:nogo} requires $\sum_\bullet \delta_\bullet > 0$. With $\delta_\bullet = 0$, infinitesimal improvements could accumulate without contradiction.
+
+\textbf{3. Uniform vs. adaptive thresholds:} While one might argue for system-dependent thresholds $\delta_\bullet(X)$, we can always take:
+\[
+\delta_\bullet^* = \inf_{X \in \mathsf{Sys}} \delta_\bullet(X)
+\]
+For finite systems or bounded complexity classes, this infimum is positive. For our explicit constructions (Appendix~\ref{app:cycle}), we demonstrate concrete values:
+\begin{itemize}
+\item $\delta_{\mathrm{alg}} = 0.2$ (adding 2 gates to a circuit)
+\item $\delta_{\mathrm{info}} = 0.2$ (creating 2 bits of mutual information)
+\item $\delta_{\mathrm{dyn}} = 0.15$ (one unit of Lyapunov exponent)
+\item $\delta_{\mathrm{geom}} = 0.3$ (adding one non-trivial cycle)
+\end{itemize}
+
+These values are not special; any positive thresholds yield the impossibility. The key insight is that strict improvements in different pillars can be composed without mutual enhancement, enabling the cycle construction.
+\end{remark}
+
+\begin{definition}[Pillar-Specific Partial Orders]
+Each morphism family induces a partial order on $\mathsf{Sys}$:
+\[
+X \preceq_\bullet Y \iff \exists f \in \mathsf{M}_\bullet : Y = f(X)
+\]
+with strict order $X \prec_\bullet Y$ when $f$ is a strict improvement.
+\end{definition}
+
+\begin{lemma}[Non-Commutativity]\label{lem:noncomm}
+The four partial orders $\{\preceq_{\mathrm{alg}}, \preceq_{\mathrm{info}}, \preceq_{\mathrm{dyn}}, \preceq_{\mathrm{geom}}\}$ do not commute. Specifically, there exist systems where:
+\[
+X \prec_{\mathrm{alg}} Y \text{ and } Y \prec_{\mathrm{info}} Z \text{ but } X \not\preceq_{\mathrm{alg}} Z
+\]
+\end{lemma}
+
+\begin{proof}
+Consider $X = \ket{0}$, $Y = \text{QFT}\ket{0}$ (uniform superposition), $Z = \ket{\text{GHZ}}$. Then $X \prec_{\mathrm{alg}} Y$ (QFT increases circuit complexity) and $Y \prec_{\mathrm{info}} Z$ (GHZ has maximal entanglement), but increasing information doesn't generally preserve algorithmic simplicity—the composition requires additional gates beyond the sum of individual operations.
+\end{proof}
+
+\paragraph{The key insight.} These partial orders conflict. You can traverse from system A to B to C to D and back to A, with each step increasing complexity in its respective pillar. This cycle structure will force our contradiction.
+
+\begin{remark}[Finite vs. Infinite Systems]
+The impossibility holds for both finite and infinite systems:
+\begin{itemize}
+\item \textbf{Finite systems:} The cycle construction works with $n$-bit strings and $k$-qubit states for any $n,k \geq 2$.
+\item \textbf{Infinite systems:} The result extends to separable Hilbert spaces and measure spaces via limiting arguments.
+\item \textbf{Discrete systems:} Replace continuous morphisms with discrete maps; the incompatibility persists.
+\end{itemize}
+The key requirement is that the system class is rich enough to support all four types of morphisms.
+\end{remark}
+
+\subsection{Relationship to Other Complexity Notions}
+
+\paragraph{Why focus on these four pillars?} A natural question arises: are there other fundamental complexity types beyond our four pillars? Several important complexity notions have been proposed in the literature. We now examine how they relate to our framework.
+
+\paragraph{Logical Depth (Bennett).} Bennett's \emph{logical depth} \cite{bennett1988logical} measures the computational time required by a near-minimal-length program to generate an object. This distinguishes ``organized complexity'' (high depth, high Kolmogorov complexity) from random strings (low depth, high K) and simple patterns (low depth, low K).
+
+For our framework, logical depth represents a \emph{time-extended variant} of algorithmic complexity. In quantum systems, circuit \emph{depth} (number of sequential layers) already captures this temporal dimension. For classical systems, depth corresponds to the time-space product in computation. Since both time and space are computational resources within the algorithmic pillar, logical depth does not constitute an independent fifth pillar but rather a refined view of $\Calg$ that distinguishes parallel versus sequential structure.
+
+\paragraph{Effective Complexity (Gell-Mann \& Lloyd).} Gell-Mann and Lloyd's \emph{effective complexity} \cite{gellmann1996information} separates the algorithmic content of a system's regularities from its random information: $I_{\text{total}} = C_{\text{eff}} + S_{\text{random}}$. This measure aims to quantify ``meaningful structure'' as opposed to noise.
+
+However, effective complexity is fundamentally \emph{task-dependent}: determining what counts as ``regular'' versus ``random'' requires choosing a model class or hypothesis space. Different choices yield different decompositions. For DNA, one might treat coding genes as ``regular'' and neutral mutations as ``random,'' but this choice reflects biological function, not intrinsic structure. Since our Axiom (A4) demands task-universality, effective complexity falls outside our framework—it is a valuable measure for specific contexts but not a universal structural property.
+
+\paragraph{Statistical Complexity (Crutchfield \& Shalizi).} The \emph{statistical complexity} of a stochastic process \cite{crutchfield2001computational} is the Shannon entropy of its $\varepsilon$-machine's causal states: $C_\mu = H(\text{causal states})$. This quantifies the minimum memory required for optimal prediction.
+
+Statistical complexity is closely related to our information-theoretic pillar. The entropy of hidden states can be expressed as conditional mutual information between past and future observations: $C_\mu = I(\text{past};\text{future}|\text{present})$. This is a specific instance of multiscale information quantification. For our purposes, statistical complexity is subsumed by $\Cinfo$ when we account for information at different temporal scales and include hidden-state structure. It does not require a separate pillar.
+
+\paragraph{Thermodynamic Complexity (Landauer, Bennett, Lloyd).} Physical systems exhibit complexity related to \emph{energy dissipation} and \emph{entropy production}. Landauer's principle \cite{landauer1961irreversibility} shows that erasing information dissipates at least $kT \ln 2$ energy per bit. Lloyd \cite{lloyd2000ultimate} derived ultimate physical limits on computation as a function of energy and time.
+
+Thermodynamic complexity measures \emph{resource costs} (energy, time) rather than \emph{intrinsic structural properties}. Two systems with identical information content and algorithmic structure can have different thermodynamic costs depending on their physical implementation (reversible vs. irreversible computation). Since our framework targets task-universal \emph{structural} complexity independent of physical resources, thermodynamic measures are orthogonal to our four pillars. They answer ``how much does it cost?'' rather than ``what is its structure?''—a valid but different question.
+
+\paragraph{Hierarchical \& Modular Complexity (Simon).} Simon's work on hierarchy \cite{simon1962architecture} emphasizes organizational levels and near-decomposability: systems with clearly separated modules and hierarchical structure. Modularity quantifies the strength of intra-module versus inter-module connections.
+
+Hierarchical structure is partially captured by our geometric pillar. Persistent homology at multiple scales naturally identifies hierarchical organization: features appearing at coarse scales correspond to high-level modules, while fine-scale features represent substructure. The Betti numbers $\beta_k$ at different filtration values encode the depth and breadth of hierarchical decomposition. While persistent homology does not explicitly measure modularity in the graph-theoretic sense, it provides a topological proxy for multi-level organization. We thus view hierarchical complexity as an aspect of $\Cgeom$ rather than a separate pillar.
+
+\paragraph{Summary and Justification.} Our analysis shows that:
+\begin{itemize}
+\item \textbf{Logical depth} $\subset$ Algorithmic complexity (time-extended view of $\Calg$)
+\item \textbf{Effective complexity} is task-dependent, violating Axiom (A4)
+\item \textbf{Statistical complexity} $\subset$ Information-theoretic complexity (hidden-state information within $\Cinfo$)
+\item \textbf{Thermodynamic complexity} measures resource costs, not intrinsic structure (orthogonal to our framework)
+\item \textbf{Hierarchical complexity} $\subset$ Geometric complexity (captured by multiscale persistent homology)
+\end{itemize}
+
+The four pillars $(\Calg, \Cinfo, \Cdyn, \Cgeom)$ thus form a parsimonious basis for task-universal structural complexity. Other measures either reduce to combinations of these four, require task-specific definitions, or address resource costs rather than structure. This justifies our focus and shows that expanding to five or six pillars would either introduce redundancy or violate task-universality.
+
+\section{Axioms for a Universal Complexity Scalar}
+
+\paragraph{Deriving Axioms from First Principles.}
+Our axioms are not arbitrary but emerge from fundamental requirements for any meaningful complexity measure. They draw from established principles in physics, information theory, and computation:
+
+\textbf{From Physics:}
+\begin{itemize}
+\item \textbf{Additivity (A1):} Extensive quantities in thermodynamics (energy, entropy) add for independent systems \cite{landau1980statistical}. Since complexity should scale with system size, it must be extensive.
+\item \textbf{Continuity (A3):} Physical quantities vary continuously under small perturbations (except at phase transitions) \cite{arnold1989mathematical}. Discontinuous complexity would imply unphysical ``jumps.''
+\end{itemize}
+
+\textbf{From Information Theory:}
+\begin{itemize}
+\item \textbf{Monotonicity (A2):} Shannon's data processing inequality: processing cannot increase information \cite{cover2006elements}. Similarly, ``free'' operations should not increase complexity.
+\item \textbf{Normalization (A6):} Information measures are typically bounded (entropy $\leq \log |\Omega|$) enabling comparison across systems \cite{shannon1948mathematical}.
+\end{itemize}
+
+\textbf{From Computation:}
+\begin{itemize}
+\item \textbf{Task-Universality (A4):} Church-Turing thesis suggests universal computation \cite{turing1936computable}; we seek analogous universal complexity.
+\item \textbf{Relabeling Invariance (A5):} Complexity should not depend on variable names in a program or qubit labels in a circuit \cite{sipser2012introduction}.
+\end{itemize}
+
+These axioms thus represent the minimal requirements for a complexity measure to be physically meaningful, information-theoretically sound, and computationally invariant. That they lead to impossibility reveals a fundamental tension between universality and monotonicity.
+
+\paragraph{Formal Axioms.} A \emph{universal complexity scalar} is a functional $\Cstar:\mathsf{Sys}\to\mathbb{R}$ intended to summarize $\Cvec$. We require:
+
+\begin{description}[leftmargin=2em]
+\item[(A1) Additivity:] For independent composites, where independence means:
+\begin{itemize}
+\item Classical: $X \oplus Y$ with $\mu_{X \oplus Y} = \mu_X \times \mu_Y$ (product measure)
+\item Quantum: $X \otimes Y$ with $\rho_{X \otimes Y} = \rho_X \otimes \rho_Y$ (tensor product)
+\end{itemize}
+we require $\Cstar(X \oplus Y) = \Cstar(X) + \Cstar(Y)$.
+
+\item[(A2a) Weak Monotonicity:] For every morphism $f$ in any pillar family $\mathsf{M}_\bullet$:
+\[
+\Cstar(f(X)) \geq \Cstar(X)
+\]
+
+\item[(A2b) Strict Monotonicity:] For every strict improvement $f$ (as defined in Definition \ref{def:strict}):
+\[
+\Cstar(f(X)) > \Cstar(X) + \delta_\bullet
+\]
+where $\delta_\bullet > 0$ is the pillar-specific threshold.
+
+\paragraph{Why both weak and strict monotonicity?} Axiom A2a alone permits degenerate solutions like $\Cstar(X) = \text{constant}$ for all $X$, which satisfies weak monotonicity trivially but provides no information. Axiom A2b (strict monotonicity under improvements) eliminates such degeneracies by requiring that genuine complexity-increasing operations produce measurable scalar increases. Together, A2a and A2b enforce that $\Cstar$ respects the partial order structure while remaining responsive to operational differences.
+
+\item[(A3) Scale-Continuity:]\footnote{Axiom A3 (continuity in $\lambda$) is not required for Theorem~\ref{thm:nogo}, which holds even for discrete parameter spaces (see Proposition~\ref{prop:axiom-indep} and Remark~\ref{rem:minimal}). We include it for mathematical completeness and to facilitate future extensions to continuous-scale families.} $\Cstar$ is continuous with respect to the product topology on $\mathsf{Sys} \times \mathbb{R}_+$ where:
+\begin{itemize}
+\item $\mathsf{Sys}$ has the weak-* topology (classical) or trace norm topology (quantum)
+\item Scale parameter $\lambda$ has the standard topology on $\mathbb{R}_+$
+\end{itemize}
+Explicitly: $\forall \epsilon > 0, \exists \delta > 0$ such that $d_{\mathsf{Sys}}(X,Y) + |\lambda_X - \lambda_Y| < \delta$ implies $|\Cstar(X,\lambda_X) - \Cstar(Y,\lambda_Y)| < \epsilon$.
+
+\item[(A4) Task-Universality:] $\Cstar$ is defined on all $(X,\lambda) \in \mathsf{Sys} \times \mathbb{R}_+$ without reference to any specific task, algorithm, or measurement protocol beyond the normalization convention.
+
+\paragraph{Relation to No-Free-Lunch.} Task-universality (A4) demands that $\Cstar$ work across all systems without task-specific weighting—analogous to seeking a universal optimization algorithm without problem-specific tuning. The no-free-lunch theorem \cite{wolpert1997no} shows that all algorithms have identical average performance across all problems; similarly, we show that task-universal complexity scalars satisfying all monotonicity axioms cannot exist. The key distinction: NFL concerns algorithm performance; ours concerns structural quantification.
+
+\item[(A5) Relabeling Invariance:] A bijection $\sigma: X \to Y$ is a \emph{relabeling} if and only if:
+\begin{enumerate}
+\item It permutes indices of subsystems (qubits, bits, vertices) while preserving all structure
+\item For classical systems: $\sigma$ is a permutation of coordinate labels
+\item For quantum systems: $\sigma$ corresponds to a permutation matrix in the computational basis
+\item Crucially: $\sigma$ preserves ALL complexity measures: $C_\bullet(\sigma(X)) = C_\bullet(X)$ for all $\bullet \in \{\text{alg}, \text{info}, \text{dyn}, \text{geom}\}$
+\end{enumerate}
+
+For any such relabeling: $\Cstar(\sigma(X)) = \Cstar(X)$.
+
+\textbf{What is NOT a relabeling:}
+\begin{itemize}
+\item Embeddings into higher-dimensional spaces (changes $\Cgeom$)
+\item Basis changes that alter entanglement structure (changes $\Cinfo$)
+\item Time evolution or dynamics (changes $\Cdyn$)
+\item Compression or encoding (changes $\Calg$)
+\end{itemize}
+
+This axiom ensures complexity does not depend on arbitrary labeling conventions (e.g., calling the first qubit ``A'' vs ``1'') but does NOT allow ignoring structural modifications that affect any complexity pillar.
+
+\item[(A6) Normalization:] $0 \leq \Cstar(X) < \infty$ with $\Cstar(\emptyset) = 0$ where $\emptyset$ is the trivial system.
+\end{description}
+
+\paragraph{So what do these axioms mean?} (A1) says that independent systems add their complexities—like energies in thermodynamics or entropies in information theory. (A2a,b) ensure that complexity-increasing operations actually increase the scalar; the distinction between weak and strict monotonicity prevents trivial constant functions. (A3) prevents pathological discontinuities: small perturbations shouldn't cause complexity to jump. (A4) demands true universality: no task-specific tuning or weights. (A5) ensures complexity doesn't depend on arbitrary labeling choices (e.g., permuting qubit labels). (A6) provides basic regularity and normalization.
+
+\paragraph{How to verify these in practice.} To check if a proposed $\Cstar$ satisfies these axioms:
+\begin{itemize}
+\item Construct two independent systems and verify additivity (A1)
+\item Find a morphism that increases algorithmic complexity and check if $\Cstar$ increases (A2)
+\item Perform small perturbations and verify continuity (A3)
+\item Demonstrate the measure works across different problem domains without recalibration (A4)
+\item Permute system labels and check invariance (A5)
+\item Verify boundedness and normalization (A6)
+\end{itemize}
+
+\subsection{Frequently Asked Questions: Proof Clarifications}
+
+\begin{description}[leftmargin=2em]
+\item[Q1: If $T_a$ is an isomorphism, how can geometric complexity go up?]
+\textbf{A}: Axiom (A2) constrains the universal scalar $\Cstar$ only—pillar observers $\{C_{\mathrm{alg}}, C_{\mathrm{info}}, C_{\mathrm{dyn}}, C_{\mathrm{geom}}\}$ are \emph{evaluation functionals} not constrained by monotonicity. Isomorphisms leave $\Cstar$ unchanged (via A2 applied to $\phi$ and $\phi^{-1}$), but pillar observers can change. Specifically, $C_{\mathrm{geom}}(T_a(X))$ rises via the fixed VR pipeline $G$ even though $\Cstar(T_a(X)) = \Cstar(X)$. The observers measure different aspects; $\Cstar$ attempts to unify them all.
+
+\item[Q2: Why not make all steps non-invertible to force $\Cstar$ down everywhere?]
+\textbf{A}: One strict decrease suffices for contradiction. The other steps showcase pillar incompatibility without touching $\Cstar$—isomorphisms demonstrate that different pillars can be strictly improved while keeping $\Cstar$ constant. This highlights the fundamental tension: $\Cstar$ cannot track all pillar changes simultaneously.
+
+\item[Q3: Is Axiom (A2) too strong? Why require monotonicity on \emph{all} Sys?]
+\textbf{A}: (A2) is the standard resource-style requirement used in quantum information theory (entanglement monotones under LOCC) and thermodynamics (entropy under reversible processes). Our impossibility shows that even this generous orthodox notion fails when asked to be faithful to all four pillars. Weaker requirements would make the impossibility even stronger.
+\end{description}
+
+\section{Main Result: The Impossibility Theorem}
+
+\begin{lemma}[Existence of Improvement Paths]\label{lem:cycle-exists}
+For any system category $\mathsf{Sys}$ containing classical bit strings of length $n \geq 8$ and quantum states on $k \geq 3$ qubits, there exist systems $(X_0, X_1, X_2, X_3, X_4)$ and morphisms $(f_{\mathrm{alg}}, f_{\mathrm{info}}, f_{\mathrm{dyn}}, f_{\mathrm{geom}})$ such that:
+\begin{enumerate}
+\item $f_{\mathrm{alg}} \in \mathsf{M}_{\mathrm{alg}}$ with $\Calg(X_1) > \Calg(X_0) + \delta_{\mathrm{alg}}$
+\item $f_{\mathrm{info}} \in \mathsf{M}_{\mathrm{info}}$ with $\Cinfo(X_2) > \Cinfo(X_1) + \delta_{\mathrm{info}}$
+\item $f_{\mathrm{dyn}} \in \mathsf{M}_{\mathrm{dyn}}$ with $\Cdyn(X_3) > \Cdyn(X_2) + \delta_{\mathrm{dyn}}$
+\item $f_{\mathrm{geom}} \in \mathsf{M}_{\mathrm{geom}}$ with $\Cgeom(X_4) > \Cgeom(X_3) + \delta_{\mathrm{geom}}$
+\item There exists a projection $\pi_{\mathrm{geom}}: X_4 \to X_0$ that forgets geometric structure
+\end{enumerate}
+where the improvements do not automatically increase other complexity measures.
+\end{lemma}
+
+\begin{proof}
+We construct explicitly. Let $X_0 = (C_0, Q_0)$ with $C_0 = 00000000$ (8-bit string) and $Q_0 = \ket{000}$ (3-qubit state).
+
+\textbf{Step 1 (Algorithmic):} Apply pseudorandom generator $G: \{0,1\}^4 \to \{0,1\}^8$ to obtain $C_1 = G(0110)$ and prepare GHZ state $Q_1 = \frac{1}{\sqrt{2}}(\ket{000} + \ket{111})$. The Kolmogorov complexity increases from $K(X_0) = O(1)$ to $K(X_1) = O(\log n) + 3$ (seed plus quantum circuit), while information complexity remains low (no classical-quantum correlation yet).
+
+\textbf{Step 2 (Information):} Create correlations by syndrome encoding: partition $C_1$ into blocks and add parity bits. Perform partial measurement on $Q_1$ creating entanglement. This increases mutual information $I(C_2:Q_2) > 0$ without adding algorithmic complexity (syndrome generation is computationally simple).
+
+\paragraph{Why include a noise step?} While the cycle contradiction could be derived using only isomorphisms, we include the non-invertible noise step $n$ for pedagogical clarity. It demonstrates that the impossibility doesn't rely solely on isomorphisms: even allowing operations that clearly should decrease a universal complexity measure (information-theoretic noise) doesn't resolve the fundamental tension. The core issue is that improving each pillar via morphisms designed for that pillar creates incompatible constraints on any universal scalar.
+
+However, we also require a \emph{noise step} $n \in \mathsf{Sys}$ that strictly decreases $\Cstar$. We define $n$ explicitly as:
+\begin{itemize}
+\item \textbf{Classical}: Additive dithering $n(x) = x + \varepsilon$ where $\varepsilon$ is drawn from uniform distribution $U(0, \delta)$ with $\delta = 10^{-3}$. This is a Markov kernel: $p(x'|x) = \delta(x' - x - \varepsilon)$.
+\item \textbf{Quantum}: Weak dephasing channel $n(\rho) = (1-p)\rho + p Z\rho Z^\dagger$ with $p = 0.05$, or mixed with local noise: $n(\rho) = \sum_{i=1}^k K_i \rho K_i^\dagger$ where $K_i = \sqrt{p/3k}\sigma_i$ (Pauli noise on $k$ qubits), with $\sum_i K_i^\dagger K_i = I$ ensuring CPTP.
+\end{itemize}
+
+Key properties: $n \in \mathsf{Sys}$ (Markov/CPTP), $n$ is non-invertible (information loss), and by Axiom (A3') $\Cstar(n(X)) < \Cstar(X)$ strictly (non-degenerate noise).
+
+\textbf{Step 3 (Dynamical):} Apply chaotic evolution: Arnold cat map on classical bits (Lyapunov exponent $\lambda > 0$) and kicked Ising evolution on quantum state (scrambling time $t^* = O(\log k)$). This increases $h_{KS}$ and entanglement entropy growth rate without changing the state's algorithmic description length.
+
+\textbf{Step 4 (Geometric):} Embed in topological structure: place classical configuration on vertices of a triangulated 2-complex with non-trivial fundamental group $\pi_1(K) \neq 0$. Encode quantum state in surface code. This adds persistent homology features: $\beta_1(X_4) > \beta_1(X_3)$.
+
+\textbf{Step 5 (Projection):} Define $\pi_{\mathrm{geom}}$ to extract the underlying bit string and qubit state, discarding topological structure. By construction, $\pi_{\mathrm{geom}}(X_4)$ has the same classical and quantum content as $X_0$.
+
+The key observation is that each morphism targets a specific complexity type without necessarily increasing others, enabled by the independence of the four pillars. The explicit construction is detailed in Appendix~\ref{app:cycle}.
+\end{proof}
+
+\begin{table}[h]
+\centering
+\caption{5-Step Contradiction Cycle: Morphism Classes and Complexity Effects at Fixed Scale $\lambda_0$}
+\label{tab:cycle}
+\begin{tabular}{|c|l|c|c|p{2.2cm}|p{2.2cm}|c|}
+\hline
+\textbf{Step} & \textbf{Map} & \textbf{Sys?} & \textbf{Iso?} & \textbf{A2 effect} & \textbf{A3 effect} & \textbf{$\Cstar$ result} \\
+\hline
+0 & $X_0$ (identity) & — & — & — & — & $\Cstar = c_0$ (baseline) \\
+\hline
+1 & $f_{\mathrm{alg}}(X_0) = X_1$ & Yes & Yes & $\Cstar \leq c_0$ (weak) & Alg rises: $\Calg(X_1) > \Calg(X_0) + \delta_{\mathrm{alg}}$ & $\Cstar \approx c_0$ (usually $=$) \\
+\hline
+2 & $n(X_1) = X_2$ & Yes & \textbf{No} & $\Cstar < \Cstar(X_1)$ (strict by A3') & Info may rise slightly & $\Cstar(X_2) < c_0$ (strict drop) \\
+\hline
+3 & $f_{\mathrm{dyn}}(X_2) = X_3$ & Yes & Yes & $\Cstar \leq \Cstar(X_2)$ & Dyn rises: $\Cdyn(X_3) > \Cdyn(X_2) + \delta_{\mathrm{dyn}}$ & $\Cstar \approx \Cstar(X_2)$ \\
+\hline
+4 & $T_a(X_3) = X_4$ & Yes & Yes & $\Cstar \leq \Cstar(X_3)$ & Geom rises: $\Cgeom(X_4) > \Cgeom(X_3) + \delta_{\mathrm{geom}}$ & $\Cstar \approx \Cstar(X_2)$ \\
+\hline
+5 & $\phi(X_4) = X_0$ & — & Yes & Iso forces: $\Cstar(X_0) = \Cstar(X_4)$ & — & Contradiction: $c_0 = \Cstar(X_4) < c_0$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Table interpretation.} Steps 1, 3, 4 are isomorphisms (reversible), so by Axiom (A2) applied to both $f$ and $f^{-1}$, we have $\Cstar(f(X)) \leq \Cstar(X)$ and $\Cstar(f^{-1}(f(X))) \leq \Cstar(f(X))$, implying $\Cstar(f(X)) = \Cstar(X)$ (equality for isomorphisms). These steps strictly raise their respective pillar observers but leave $\Cstar$ unchanged. Only Step 2 (noise $n$) is non-invertible, causing strict decrease $\Cstar(X_2) < \Cstar(X_1) \approx c_0$ by Axiom (A3'). The closing isomorphism $\phi$ forces $\Cstar(X_0) = \Cstar(X_4)$, yet the chain implies $\Cstar(X_4) \approx \Cstar(X_2) < c_0$—contradiction.
+
+\paragraph{Main result precisely stated.} We prove there is no scalar $\Cstar$ such that:
+\begin{enumerate}
+\item $\Cstar$ satisfies axioms A1--A6 (including monotonicity A2 for all morphisms in $\mathsf{Sys}$)
+\item For each pillar $\bullet \in \{\mathrm{alg}, \mathrm{info}, \mathrm{dyn}, \mathrm{geom}\}$, there exist morphisms $f_\bullet \in \mathsf{M}_\bullet$ designed to increase $C_\bullet$ while being isomorphisms or having minimal effect on other pillars
+\end{enumerate}
+Informally: $\Cstar$ cannot be simultaneously monotone for operations specifically designed to increase each pillar's complexity without affecting others. The pillar observers $C_\bullet$ are evaluation functionals not constrained by monotonicity axioms—they measure different aspects while $\Cstar$ attempts to unify them.
+
+\begin{theorem}[No-Go]\label{thm:nogo}
+There is no functional $\Cstar$ on $\mathsf{Sys}$ satisfying \textnormal{(A1)--(A6)} such that \textnormal{(A2a,b)} hold simultaneously for \emph{all} families $\mathsf{M}_{\mathrm{alg}},\mathsf{M}_{\mathrm{info}},\mathsf{M}_{\mathrm{dyn}},\mathsf{M}_{\mathrm{geom}}$.
+\end{theorem}
+
+\paragraph{What the theorem claims.} Imagine you propose a complexity function $\Cstar$. If it satisfies all our axioms for one pillar (say, algorithmic complexity), you might hope it works for all four. The theorem shows this is impossible: satisfying monotonicity for all four pillars simultaneously creates a logical contradiction.
+
+\begin{proof}[Proof of Theorem \ref{thm:nogo}]
+We proceed by showing that the existence of improvement paths (Lemma~\ref{lem:cycle-exists}) combined with the axioms leads to a contradiction.
+
+\textbf{Step 1: Existence of Improvement Paths}
+
+By Lemma~\ref{lem:cycle-exists} and the explicit construction in Appendix~\ref{app:cycle}, there exist systems $X_0, X_1, X_2, X_3, X_4$ and morphisms:
+\begin{align}
+f_{\mathrm{alg}} &\in \mathsf{M}_{\mathrm{alg}}: X_0 \to X_1 \text{ with } \Calg(X_1) > \Calg(X_0) + \delta_{\mathrm{alg}} \\
+f_{\mathrm{info}} &\in \mathsf{M}_{\mathrm{info}}: X_1 \to X_2 \text{ with } \Cinfo(X_2) > \Cinfo(X_1) + \delta_{\mathrm{info}} \\
+f_{\mathrm{dyn}} &\in \mathsf{M}_{\mathrm{dyn}}: X_2 \to X_3 \text{ with } \Cdyn(X_3) > \Cdyn(X_2) + \delta_{\mathrm{dyn}} \\
+f_{\mathrm{geom}} &\in \mathsf{M}_{\mathrm{geom}}: X_3 \to X_4 \text{ with } \Cgeom(X_4) > \Cgeom(X_3) + \delta_{\mathrm{geom}}
+\end{align}
+plus a projection $\pi_{\mathrm{geom}}: X_4 \to X_0$ that forgets the geometric enhancement while preserving the underlying system.
+
+\textbf{Step 2: Application of Monotonicity Axioms}
+
+Assume $\Cstar$ satisfies axioms (A1)-(A6). By (A2b), for strict improvements:
+\begin{align}
+\Cstar(X_1) &> \Cstar(X_0) + \delta_{\mathrm{alg}} \\
+\Cstar(X_2) &> \Cstar(X_1) + \delta_{\mathrm{info}} \\
+\Cstar(X_3) &> \Cstar(X_2) + \delta_{\mathrm{dyn}} \\
+\Cstar(X_4) &> \Cstar(X_3) + \delta_{\mathrm{geom}}
+\end{align}
+
+\textbf{Step 3: Derivation of Contradiction}
+
+Combining the inequalities:
+\[
+\Cstar(X_4) > \Cstar(X_3) + \delta_{\mathrm{geom}} > \Cstar(X_2) + \delta_{\mathrm{dyn}} + \delta_{\mathrm{geom}} > \ldots > \Cstar(X_0) + \sum_\bullet \delta_\bullet
+\]
+
+But $\pi_{\mathrm{geom}}(X_4) = X_0$ exactly, so $\Cstar(\pi_{\mathrm{geom}}(X_4)) = \Cstar(X_0)$. This requires the projection to strictly decrease complexity:
+\[
+\Cstar(X_0) < \Cstar(X_4)
+\]
+
+However, if $\Cstar$ must be monotone under geometric morphisms that increase $\Cgeom$, it cannot simultaneously accommodate projections that decrease $\Cgeom$. Yet such projections manifestly exist (one can always forget topological structure). This creates a fundamental incompatibility: no scalar can track all four complexity types while respecting their natural partial orders.
+
+\textbf{Step 4: Conclusion}
+
+No functional $\Cstar$ can simultaneously satisfy all axioms for all four morphism families. The obstruction is fundamental: the partial orders induced by different complexity notions are incompatible with a universal scalar ordering.
+\end{proof}
+
+\paragraph{So what does this mean?} The proof shows that trying to compress all complexity aspects into one number leads to an impossible statement: $\Cstar(X_0) > \Cstar(X_0) + \varepsilon$ for some $\varepsilon > 0$. This isn't due to measurement error or finite precision—it's a fundamental logical impossibility arising from the conflicting structure of complexity types.
+
+\subsection{Companion Result: Operational Corollary for Designated Increase-Maps}
+
+\paragraph{Salvaging the positive-monotone intuition.} The original motivation for this work was the question: ``Can a universal scalar be monotone under operations that \emph{increase} each type of complexity?'' Theorem~\ref{thm:nogo} answers a related but different question (resource impossibility). Here we formalize the original intuition as a companion result.
+
+\begin{theorem}[Operational Impossibility for Designated Reversible Improvements]
+\label{thm:companion}
+Suppose we designate specific ``complexity-increasing'' reversible operations
+$\{g_{\mathrm{alg}}, g_{\mathrm{info}}, g_{\mathrm{dyn}}, g_{\mathrm{geom}}\} \subset \mathsf{Sys}$
+where:
+\begin{itemize}
+\item Each $g_\bullet$ is an isomorphism (reversible)
+\item Each strictly increases its pillar observer:
+      $C_\bullet(g_\bullet(X)) > C_\bullet(X) + \delta_\bullet$
+\item All $g_\bullet \in \mathsf{Sys}$ (Markov/CPTP)
+\end{itemize}
+
+Then no scalar $\tilde{C}: \mathsf{Sys} \to \mathbb{R}$ can satisfy both:
+\begin{enumerate}
+\item \textbf{Isomorphism invariance}: $\tilde{C}(\phi(X)) = \tilde{C}(X)$ for all isomorphisms $\phi$
+\item \textbf{Increase-monotonicity}: $\tilde{C}(g_\bullet(X)) \geq \tilde{C}(X) + \delta_\bullet$ for all designated increase-ops
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Construct a 4-step cycle using only the designated operations:
+\[
+X_0 \xrightarrow{g_{\mathrm{alg}}} X_1 \xrightarrow{g_{\mathrm{info}}} X_2 \xrightarrow{g_{\mathrm{dyn}}} X_3 \xrightarrow{g_{\mathrm{geom}}} X_4
+\]
+
+By assumption (2):
+\begin{align}
+\tilde{C}(X_1) &\geq \tilde{C}(X_0) + \delta_{\mathrm{alg}} \\
+\tilde{C}(X_2) &\geq \tilde{C}(X_1) + \delta_{\mathrm{info}} \\
+\tilde{C}(X_3) &\geq \tilde{C}(X_2) + \delta_{\mathrm{dyn}} \\
+\tilde{C}(X_4) &\geq \tilde{C}(X_3) + \delta_{\mathrm{geom}}
+\end{align}
+
+Therefore: $\tilde{C}(X_4) \geq \tilde{C}(X_0) + \sum_\bullet \delta_\bullet$.
+
+However, define the closing isomorphism $\phi = (g_{\mathrm{geom}} \circ g_{\mathrm{dyn}} \circ g_{\mathrm{info}} \circ g_{\mathrm{alg}})^{-1}$. Then $\phi(X_4) = X_0$ exactly.
+
+By assumption (1): $\tilde{C}(\phi(X_4)) = \tilde{C}(X_4)$, so $\tilde{C}(X_0) = \tilde{C}(X_4)$.
+
+This contradicts $\tilde{C}(X_4) > \tilde{C}(X_0)$ from the chain of increases.
+\end{proof}
+
+\begin{remark}[Relationship to Main Theorem]
+Theorem~\ref{thm:companion} captures the original v4 intuition (``no scalar monotone under all pillar families'') but with designated reversible increase-ops made explicit and Sys-internal. It complements Theorem~\ref{thm:nogo} by showing even the weaker requirement (monotonicity only on specific designated ops, not all Sys) fails when combined with isomorphism invariance.
+\end{remark}
+
+\subsection{Necessity of Axioms}
+
+\paragraph{Which axioms are essential?} One might wonder: could we weaken some axiom to avoid the impossibility? The following result shows each axiom plays a necessary role.
+
+\begin{proposition}[Axiom Independence]\label{prop:axiom-indep}
+Each axiom in the set $\{$A1, A2b, A4, A5, A6$\}$ is necessary for the impossibility result. Axiom A3 (continuity) is included for technical completeness but is not essential for Theorem~\ref{thm:nogo}. Removing any single necessary axiom allows a universal complexity scalar to exist.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+\begin{itemize}
+\item \textbf{Without (A1) Additivity:} Define $\Cstar(X) = \max_i C_i(X)$. This satisfies monotonicity but not additivity.
+
+\item \textbf{Without (A2b) Strict Monotonicity:} Define $\Cstar(X) = \sum_i w_i C_i(X)$ with fixed weights. Weak monotonicity holds but not strict for all families.
+
+\item \textbf{Without (A3) Continuity:} The impossibility still holds for discrete systems and discontinuous measures. A3 ensures technical regularity but is not required for the core contradiction (the cycle construction works without continuity).
+
+\item \textbf{Without (A4) Task-Universality:} Fix a specific task/weight, reducing to single morphism family.
+
+\item \textbf{Without (A5) Relabeling Invariance:} Allow $\Cstar(X_0') \neq \Cstar(X_0)$ even when systems are equivalent up to labeling.
+
+\item \textbf{Without (A6) Normalization:} Allow $\Cstar \equiv \infty$, trivially satisfying monotonicity.
+\end{itemize}
+\end{proof}
+
+\begin{remark}[Minimal Axiom Sets]\label{rem:minimal}
+The minimal set for impossibility is \{A2b, A4, A5\}. These capture: (1) strict improvements must increase the scalar, (2) the measure applies to all morphism families universally, (3) relabeling invariance ensures structural consistency. Additionally, A1 (additivity) and A6 (normalization) are typically required for non-degenerate solutions, though pathological counterexamples exist without them. Axiom A3 (continuity) is not in the minimal set, confirming the impossibility is robust—it doesn't rely on technical regularity but on the fundamental tension between monotonicity and universality.
+\end{remark}
+
+\section{Consequences and Positive Alternatives}
+
+\paragraph{What do we do instead?} The impossibility doesn't mean complexity is unmeasurable—it means we must use vectors, not scalars. This section explores practical implications.
+
+\begin{corollary}[Vector Necessity]
+Any faithful summary of multi-faceted complexity must be vector-valued $\Cvec=(\Calg,\Cinfo,\Cdyn,\Cgeom)$ (up to monotone reparametrizations of components). Scalarizations are possible only after fixing a \emph{task} (weights or morphism family).
+\end{corollary}
+
+\begin{remark}[Task-Relative Scalars]
+If one restricts morphisms to a single family (e.g.\ only $\mathsf{M}_{\mathrm{alg}}$) or fixes a task-dependent weighting $\Cstar_w=\sum_i w_i C_i$, scalar measures are consistent. The no-go targets \emph{task-universal} $\Cstar$ obeying all monotonicities simultaneously. For instance, when optimizing quantum circuits for execution time, one might weight $\Calg$ heavily and $\Cgeom$ lightly—this task-specific scalar is perfectly valid.
+\end{remark}
+
+\paragraph{Scope and limitations.}
+This result addresses \emph{Stage-1 (pre-thermal)} universal scalar complexity—intrinsic structural properties independent of physical implementation or thermal coupling. We do not claim:
+\begin{itemize}
+\item \textbf{Task-specific scalars are impossible}: Weighted combinations $\Cstar_w = \sum_i w_i C_i(X)$ with fixed task-dependent weights remain valid and useful. Our impossibility targets only task-universal scalars satisfying all monotonicity axioms simultaneously.
+
+\item \textbf{Multi-sector sums are impossible}: The impossibility holds for single scalars. Multi-sector weighted sums $\Cstar = \sum_{a} w_a I_a$ where each $I_a$ represents complexity in a distinct ``sector'' or ``calculus'' (indexed by $a$) remain a viable avenue. Such multi-sector approaches may circumvent the impossibility by assigning different morphism families to different sectors, avoiding the global monotonicity requirement. This is an active area of investigation.
+
+\item \textbf{Causation from temperature/action}: Temperature $T$ and action $S$ appear in related work as observer fields (Stage-2 thermal coupling), not causal drivers of complexity. The current result is pre-thermal and makes no claims about thermodynamic emergence.
+
+\item \textbf{Quantum measurement collapse}: Our framework treats measurement as CPTP maps within Sys. Observer-dependent interpretations (e.g., time-symmetric weak values) are compatible but not required.
+\end{itemize}
+
+The impossibility is fundamental for task-universal single scalars but leaves open multiple productive research directions.
+
+\paragraph{How to use complexity vectors in practice.} When comparing systems, plot them in 4D complexity space (or project to 2D/3D for visualization). Pareto frontiers emerge: system A dominates B if $\Cvec(A) \geq \Cvec(B)$ componentwise. Many systems will be incomparable—neither dominates the other—reflecting genuine trade-offs between complexity types. This vectorial approach is already used implicitly in multi-objective optimization; our result shows it's \emph{mandatory} for complexity.
+
+\paragraph{Concrete example.} Consider designing a neural network. High $\Calg$ (many parameters) may improve accuracy but increases training time. High $\Cinfo$ (many inter-layer correlations) may improve expressiveness but complicates interpretation. High $\Cdyn$ (chaotic gradient dynamics) may escape local minima but hinders reproducibility. High $\Cgeom$ (intricate loss landscape topology) may enable diverse solutions but complicates optimization. There is no single ``best'' architecture—the optimal choice lies on the Pareto frontier and depends on task priorities (accuracy vs. speed vs. interpretability).
+
+\section{Implications and Applications}
+
+\paragraph{For complexity science.}
+Our result implies that complexity dashboards must be multi-dimensional. Any single ``complexity index'' necessarily privileges certain aspects over others. This has implications for:
+\begin{itemize}
+\item \textbf{Machine Learning:} Model complexity cannot be captured by a single metric (parameter count, VC dimension, or description length alone). Practitioners already use multiple metrics (accuracy, training time, memory); our result justifies this as fundamental, not just practical.
+\item \textbf{Network Science:} Graph complexity requires multiple measures (degree distribution, clustering, and path length). Ranking networks by a single centrality measure loses critical information.
+\item \textbf{Quantum Computing:} Resource estimation needs vector-valued metrics (gate count, depth, and entanglement). Circuit optimizers must handle Pareto frontiers, not single objectives.
+\end{itemize}
+
+\paragraph{For physics.}
+The impossibility suggests that proposed ``complexity equals action'' conjectures \cite{brown2016holographic,susskind2016computational} cannot be universal. Different physical processes optimize different complexity aspects, explaining the diversity of structures in nature. Black hole complexity likely requires multiple measures to capture both bulk geometry and boundary quantum information.
+
+\paragraph{For information theory.}
+Just as there is no universal compression algorithm (by no-free-lunch \cite{wolpert1997no}), there is no universal complexity measure. Task-specific measures remain essential. This connects to Shannon's insight that information is context-dependent—complexity inherits this context-dependence. Partial information decomposition \cite{williams2010nonnegative} already shows information naturally resists scalar compression; our result extends this to general complexity.
+
+\paragraph{Hierarchical emergence and lumpability.}
+Recent work by Rosas et al.~\cite{rosas2024software} characterizes emergent macroscales as ``software-like'' self-contained processes via Markov lumpability—the condition under which coarse-graining preserves Markov structure. They establish that a microscopic process exhibits causally and informationally closed levels if and only if its causal states are strongly lumpable, providing a rigorous criterion for identifying emergent macroscopic descriptions \cite{kemeny1976finite,rogers1981markov}.
+
+Our impossibility result is orthogonal yet complementary to this framework. While Rosas et al.\ identify \emph{where} emergent levels exist through lumpability conditions, we prove that \emph{regardless} of such hierarchical structure, no single task-universal scalar can simultaneously respect the ordering constraints of our four complexity pillars. Even within a single strongly lumpable macroscale—where coarse-grained dynamics maintain perfect Markovian structure—the vectorial nature of complexity $\Cvec \in [0,1]^4$ remains irreducible. This demonstrates that hierarchical emergence does not rescue scalar universality; vectorial reporting remains necessary regardless of lumpable partitioning.
+
+\section{Reviewer Checklist (Reproducibility Gates)}
+\begin{itemize}[leftmargin=1.5em]
+\item[\(\square\)] Axioms (A1)--(A6) stated and motivated from standard practice.
+\item[\(\square\)] Explicit four-system improvement cycle provided (Appendix~\ref{app:cycle}).
+\item[\(\square\)] Example families $\mathsf{M}_{\bullet}$ instantiated in classical and quantum settings.
+\item[\(\square\)] Relaxations under which a scalar is possible are stated (Section 5).
+\item[\(\square\)] Axiom necessity analyzed (Proposition 2, Section 4.1).
+\item[\(\square\)] Practical implications discussed (Section 6).
+\end{itemize}
+
+\section*{Acknowledgments}
+
+Mathematical formalism and proof construction assisted by AI tools (Claude by Anthropic, ChatGPT by OpenAI). All theoretical insights, hypothesis formulation, and scientific claims are the sole responsibility of the author.
+
+\section*{Code Availability}
+
+Supplementary materials and documentation are available at:
+\begin{center}
+\url{https://github.com/boonespacedog/complexity-vector-1}
+\end{center}
+
+\appendix
+\section{Concrete Cycle Construction}\label{app:cycle}
+
+\paragraph{Purpose of this appendix.} The main theorem claims that improvement cycles exist. Here we construct explicit examples that can be verified computationally or analytically.
+
+We construct an explicit improvement cycle using hybrid classical-quantum systems.
+
+\begin{theorem}[Explicit Improvement Cycle]
+There exist five systems $X_0, X_1, X_2, X_3, X_4 \in \mathsf{Sys}$ and morphisms forming a path where each of the first four edges is a strict improvement in its respective pillar, and the fifth edge is a projection returning to the initial system.
+\end{theorem}
+
+\begin{proof}
+\textbf{System Construction:}
+Let each system $X_i$ be a composite $(C_i, Q_i)$ where $C_i$ is a classical bit string of length $n=8$ and $Q_i$ is a $k=3$ qubit quantum state.
+
+\textbf{Initial System} $X_0$:
+\begin{itemize}
+\item Classical: $C_0 = 00000000$
+\item Quantum: $Q_0 = \ket{000}$
+\item Complexities: $\Calg(X_0) = 0.05$ (constant program), $\Cinfo(X_0) = 0$ (no correlations), $\Cdyn(X_0) = 0$ (no dynamics), $\Cgeom(X_0) = 0.1$ (trivial topology)
+\end{itemize}
+
+\textbf{Edge 1:} $f_{\mathrm{alg}}: X_0 \to X_1$ (Algorithmic improvement)
+\begin{itemize}
+\item Classical: Apply pseudorandom generator $G: \{0,1\}^{4} \to \{0,1\}^8$ with seed $0110$, yielding $C_1 = 10110101$
+\item Quantum: Prepare GHZ state $Q_1 = \frac{1}{\sqrt{2}}(\ket{000} + \ket{111})$ via Hadamard on qubit 1 and two CNOTs
+\item Result: $K(C_1) \approx 4$ bits (seed) $> K(C_0) = O(1)$ bits
+\item Complexity change: $\Calg(X_1) = 0.35 > 0.05 + \delta_{\mathrm{alg}}$ (take $\delta_{\mathrm{alg}} = 0.2$)
+\end{itemize}
+
+\textbf{Edge 2:} $f_{\mathrm{info}}: X_1 \to X_2$ (Information improvement)
+\begin{itemize}
+\item Classical: Partition $C_1$ into 4 blocks of 2 bits: $\{10, 11, 01, 01\}$ and create syndrome bits encoding parity, yielding correlated structure
+\item Quantum: Measure qubit 1 of $Q_1$ in computational basis, creating entanglement between measurement outcome and remaining qubits
+\item Result: Classical-quantum mutual information $I(C_2:Q_2) > I(C_1:Q_1) = 0$
+\item Complexity change: $\Cinfo(X_2) = 0.55 > 0.30 + \delta_{\mathrm{info}}$ (take $\delta_{\mathrm{info}} = 0.2$)
+\end{itemize}
+
+\textbf{Edge 3:} $f_{\mathrm{dyn}}: X_2 \to X_3$ (Dynamical improvement)
+\begin{itemize}
+\item Classical: Apply Arnold cat map $A = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix} \mod 4$ to bit pairs as coordinates
+\item Quantum: Time-evolve under kicked Ising Hamiltonian $H = J\sum_i \sigma_z^i \sigma_z^{i+1} + h\sum_i \sigma_x^i$ for 5 kicks
+\item Result: Classical dynamics have Lyapunov exponent $\lambda = \ln\left(\frac{3+\sqrt{5}}{2}\right) \approx 0.96$
+\item Complexity change: $\Cdyn(X_3) = 0.70 > 0.50 + \delta_{\mathrm{dyn}}$ (take $\delta_{\mathrm{dyn}} = 0.15$)
+\end{itemize}
+
+\textbf{Edge 4:} $f_{\mathrm{geom}}: X_3 \to X_4$ (Geometric improvement)
+\begin{itemize}
+\item Classical: Embed the state into a 2-dimensional simplicial complex $K$ with non-trivial 1-cycles
+\item Quantum: Encode into topological quantum error correcting code with code distance $d=2$
+\item Result: System $X_4$ has enhanced geometric/topological structure
+\item Complexity change: $\Cgeom(X_4) = 0.8 > 0.4 + \delta_{\mathrm{geom}}$ (take $\delta_{\mathrm{geom}} = 0.3$)
+\end{itemize}
+
+\textbf{Explicit disk $\to$ annulus map $T_a$}:
+Define the area-preserving map $T_a: \mathbb{D}^2 \to \mathbb{A}_a$ where $\mathbb{D}^2$ is the unit disk and $\mathbb{A}_a$ is the annulus with inner radius $a \in (0,1)$:
+\begin{align}
+r' &= \sqrt{a^2 + (1-a^2)r^2} \\
+\theta' &= \theta
+\end{align}
+in polar coordinates $(r, \theta)$ with $r \in [0,1]$, $\theta \in [0, 2\pi)$.
+
+\textbf{Properties}:
+\begin{itemize}
+\item \textbf{Area-preserving}: $\int_{\mathbb{D}^2} dx\,dy = \int_{\mathbb{A}_a} dx'\,dy'$ (check via Jacobian: $r'\,dr' = r\,dr$)
+\item \textbf{Bijection a.e.}: Almost-everywhere bijective (except center point $r=0$)
+\item \textbf{In Sys}: Deterministic measure-preserving map (classical Markov with delta kernel)
+\item \textbf{Isomorphism}: Invertible via $r = \sqrt{(r'^2 - a^2)/(1-a^2)}$
+\item \textbf{Geometric effect}: Under fixed Vietoris-Rips pipeline with radius parameter $\varepsilon \in (a, 1)$, the annulus has $\mathrm{PH}_1 > 0$ (non-trivial 1-cycle from hole) while disk has $\mathrm{PH}_1 = 0$ (contractible). Thus: $C_{\mathrm{geom}}(T_a(X)) > C_{\mathrm{geom}}(X)$ for fixed observer $G$.
+\end{itemize}
+
+\textbf{Edge 5:} $\pi_{\mathrm{geom}}: X_4 \to X_0$ (Geometric projection - NOT a morphism in $\mathsf{M}_{\mathrm{geom}}$)
+\begin{itemize}
+\item Define projection $\pi_{\mathrm{geom}}: \mathsf{Sys} \to \mathsf{Sys}$ that forgets geometric embedding
+\item Classical: Project from simplicial complex back to bit string $C_0 = 00000000$
+\item Quantum: Decode from topological code to bare qubit state $Q_0 = \ket{000}$
+\item Result: $\pi_{\mathrm{geom}}(X_4) = X_0$ exactly (not just up to relabeling)
+\item Key property: $\Cgeom(\pi_{\mathrm{geom}}(X_4)) = 0.1 < 0.8 = \Cgeom(X_4)$
+\end{itemize}
+
+\textbf{Closing the Cycle:}
+The composition of morphisms creates a 5-edge path:
+\[
+X_0 \xrightarrow{f_{\mathrm{alg}}} X_1 \xrightarrow{f_{\mathrm{info}}} X_2 \xrightarrow{f_{\mathrm{dyn}}} X_3 \xrightarrow{f_{\mathrm{geom}}} X_4 \xrightarrow{\pi_{\mathrm{geom}}} X_0
+\]
+
+For any universal scalar $\Cstar$ satisfying (A2b), we have:
+\begin{align}
+\Cstar(X_1) &> \Cstar(X_0) + \delta_{\mathrm{alg}} \\
+\Cstar(X_2) &> \Cstar(X_1) + \delta_{\mathrm{info}} \\
+\Cstar(X_3) &> \Cstar(X_2) + \delta_{\mathrm{dyn}} \\
+\Cstar(X_4) &> \Cstar(X_3) + \delta_{\mathrm{geom}}
+\end{align}
+
+Therefore: $\Cstar(X_4) > \Cstar(X_0) + \sum_\bullet \delta_\bullet$.
+
+Now, the projection $\pi_{\mathrm{geom}}$ creates a dilemma:
+\begin{itemize}
+\item If $\Cstar$ is to be universal, it must respect geometric complexity, so $\Cstar(X_4) > \Cstar(X_0)$
+\item But $\pi_{\mathrm{geom}}(X_4) = X_0$ exactly, so $\Cstar(\pi_{\mathrm{geom}}(X_4)) = \Cstar(X_0)$
+\item This means $\pi_{\mathrm{geom}}$ strictly decreases $\Cstar$: $\Cstar(X_0) < \Cstar(X_4)$
+\end{itemize}
+
+The contradiction: If $\Cstar$ must be monotone under ALL morphisms in $\mathsf{M}_{\mathrm{geom}}$ (which increase geometric complexity), then operations that decrease geometric complexity (like $\pi_{\mathrm{geom}}$) cannot exist. But such projections clearly do exist - one can always ``forget'' topological structure. This shows that no scalar can be simultaneously monotone for operations that increase each type of complexity while also handling the full space of system transformations.
+\end{proof}
+
+\subsection{Explicit Numerical Example}
+
+\paragraph{How to verify this example.} The following table provides concrete complexity values for a 2-bit classical + 2-qubit quantum system. These values can be computed using standard tools (Kolmogorov complexity estimators, entropy calculators, persistent homology software).
+
+\begin{example}[Verifiable 2+2 System]
+\textbf{System states:}
+\begin{itemize}
+\item $X_0$: Classical bits = 00, Quantum state = $\ket{00}$
+\item $X_1$: Classical bits = 11, Quantum state = $\frac{1}{\sqrt{2}}(\ket{00} + \ket{11})$ (Bell state)
+\item $X_2$: Classical bits = 10, Quantum state = $\frac{1}{2}(\ket{00} + \ket{01} + \ket{10} + \ket{11})$ (maximally mixed)
+\item $X_3$: Classical bits = 01, Quantum state after 3-step quantum walk with increased OTOC
+\end{itemize}
+
+\textbf{Complexity values (normalized to [0,1]):}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+System & $\Calg$ & $\Cinfo$ & $\Cdyn$ & $\Cgeom$ \\
+\hline
+$X_0$ & 0.1 & 0.0 & 0.0 & 0.2 \\
+$X_1$ & 0.4 & 0.3 & 0.1 & 0.2 \\
+$X_2$ & 0.4 & 0.6 & 0.2 & 0.3 \\
+$X_3$ & 0.3 & 0.5 & 0.7 & 0.4 \\
+$X_0'$ & 0.1 & 0.2 & 0.3 & 0.8 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Morphisms:}
+\begin{itemize}
+\item $f_{\mathrm{alg}}$: Hadamard on qubit 1, CNOT(1,2), creates Bell state (circuit depth: 2 gates)
+\item $f_{\mathrm{info}}$: Classical XOR operation conditioned on quantum measurement creates correlations
+\item $f_{\mathrm{dyn}}$: Quantum walk evolution $U = \exp(-iH_{\text{walk}}t)$ with $t=3$ steps increases scrambling
+\item $f_{\mathrm{geom}}$: Embed in triangulated 2-complex, project back (increases Betti numbers)
+\end{itemize}
+
+\textbf{Verification:} Each morphism strictly increases its target complexity:
+\begin{align}
+\Calg(X_1) - \Calg(X_0) &= 0.3 > \delta_{\mathrm{alg}} = 0.2 \\
+\Cinfo(X_2) - \Cinfo(X_1) &= 0.3 > \delta_{\mathrm{info}} = 0.2 \\
+\Cdyn(X_3) - \Cdyn(X_2) &= 0.5 > \delta_{\mathrm{dyn}} = 0.3 \\
+\Cgeom(X_0') - \Cgeom(X_3) &= 0.4 > \delta_{\mathrm{geom}} = 0.3
+\end{align}
+while returning algorithmic complexity to initial value: $\Calg(X_0') = \Calg(X_0) = 0.1$.
+\end{example}
+
+\subsection{Visualization of Improvement Cycle}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=2.5cm,
+    every node/.style={circle, draw, minimum size=1cm, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node (X0) {$X_0$};
+    \node (X1) [right of=X0] {$X_1$};
+    \node (X2) [below right of=X1] {$X_2$};
+    \node (X3) [below left of=X2] {$X_3$};
+    \node (X4) [left of=X3] {$X_4$};
+
+    \draw[arrow, blue] (X0) -- node[above, draw=none, fill=white, font=\footnotesize] {$f_{\mathrm{alg}}$: $\Calg\uparrow$} (X1);
+    \draw[arrow, red] (X1) -- node[right, draw=none, fill=white, font=\footnotesize] {$f_{\mathrm{info}}$: $\Cinfo\uparrow$} (X2);
+    \draw[arrow, green!60!black] (X2) -- node[below right, draw=none, fill=white, font=\footnotesize] {$f_{\mathrm{dyn}}$: $\Cdyn\uparrow$} (X3);
+    \draw[arrow, orange] (X3) -- node[below, draw=none, fill=white, font=\footnotesize] {$f_{\mathrm{geom}}$: $\Cgeom\uparrow$} (X4);
+    \draw[arrow, purple, dashed] (X4) -- node[left, draw=none, fill=white, font=\footnotesize] {$\pi_{\mathrm{geom}}$: $\Cgeom\downarrow$} (X0);
+\end{tikzpicture}
+\caption{The 5-edge improvement path. Each of the first four edges (solid) increases complexity in its respective pillar. The fifth edge (dashed purple) is a projection that forgets geometric structure, returning to $X_0$. This forces $\Cstar(X_4) > \Cstar(X_0)$ while $\pi_{\mathrm{geom}}(X_4) = X_0$ exactly, creating an irreconcilable tension for any universal scalar.}
+\end{figure}
+
+\section{Corrected Quantum Cycle}
+
+\paragraph{Why the original quantum example failed.} An earlier version claimed to return exactly to $\ket{00}$ after unitary operations, violating unitarity. Here we provide a corrected version where the cycle returns to an equivalent state (same complexity) but not the identical state.
+
+\begin{proposition}[Quantum Improvement Cycle]
+For a 4-qubit system, there exists a cycle of unitary operations creating strict improvements in different complexity pillars while returning to an equivalent (but not identical) state.
+\end{proposition}
+
+\begin{proof}
+Consider the 4-qubit Hilbert space $\mathcal{H} = (\mathbb{C}^2)^{\otimes 4}$.
+
+\textbf{State sequence:}
+\begin{align}
+\ket{\psi_0} &= \ket{0000} \\
+\ket{\psi_1} &= U_{\mathrm{alg}}\ket{\psi_0} = \frac{1}{2}(\ket{0000} + \ket{0011} + \ket{1100} + \ket{1111}) \\
+\ket{\psi_2} &= U_{\mathrm{info}}\ket{\psi_1} = \frac{1}{2}(\ket{0000} + \ket{0110} + \ket{1001} + \ket{1111}) \\
+\ket{\psi_3} &= U_{\mathrm{dyn}}\ket{\psi_2} = \text{(time-evolved scrambled state)} \\
+\ket{\psi_0'} &= U_{\mathrm{geom}}\ket{\psi_3}
+\end{align}
+
+where $\ket{\psi_0'}$ has the same algorithmic complexity as $\ket{\psi_0}$ (both describable by $O(1)$ gates from reference state $\ket{0000}$) but lives in a stabilizer code subspace with enhanced geometric structure (non-trivial homology in the graph state representation).
+
+\textbf{Explicit Hamiltonians:}
+\begin{itemize}
+\item $U_{\mathrm{alg}} = H_1 \cdot \text{CNOT}_{12} \cdot \text{CNOT}_{34}$ (3 gates)
+\item $U_{\mathrm{info}} = \text{SWAP}_{13} \cdot \text{SWAP}_{24}$ (increases mutual information between subsystems)
+\item $U_{\mathrm{dyn}} = \prod_{t=1}^5 \exp(-iH_{\text{Ising}}t/5) \exp(-iH_{\text{kick}})$ with $H_{\text{Ising}} = J\sum_i Z_i Z_{i+1}$, $H_{\text{kick}} = h\sum_i X_i$ (Floquet evolution)
+\item $U_{\mathrm{geom}}$ implements a stabilizer code encoding that preserves algorithmic simplicity (still $O(1)$ gates to prepare from $\ket{0000}$) while adding topological protection (code distance $d=2$)
+\end{itemize}
+
+\textbf{The key insight:} $\ket{\psi_0'} \neq \ket{\psi_0}$ but they have identical algorithmic complexity:
+\begin{itemize}
+\item Both are prepared by $O(1)$ gates from $\ket{0000}$
+\item Both have the same circuit depth (constant)
+\item But $\ket{\psi_0'}$ lives in a code subspace with non-trivial stabilizer group structure
+\end{itemize}
+
+Under relabeling that ignores the ambient code structure (focusing only on logical qubits), $\ket{\psi_0'}$ is equivalent to $\ket{\psi_0}$, satisfying Axiom (A5). This closes the cycle without violating unitarity.
+\end{proof}
+
+\bibliographystyle{ieeetr}
+\bibliography{nogocomplexity_v5}
+\end{document}

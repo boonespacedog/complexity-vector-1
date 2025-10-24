@@ -1,0 +1,11 @@
+# Python dependencies for No-Go Scalar complexity demonstrations
+# Last updated: October 2025
+
+# Core numerical computing
+numpy>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# Scientific computing (if needed for verification)
+scipy>=1.10.0
