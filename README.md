@@ -2,11 +2,10 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17436068.svg)](https://doi.org/10.5281/zenodo.17436068)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Paper License: CC BY 4.0](https://img.shields.io/badge/Paper%20License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
 **Author**: Oksana Sudoma
-**Status**: Pending Submission (October 2025)
-**DOI**: https://doi.org/10.5281/zenodo.17436068 (reserved)
+**Status**: Preprint Submission (October 25, 2025)
+**DOI**: https://doi.org/10.5281/zenodo.17436068
 
 ## Overview
 
@@ -28,8 +27,8 @@ The proof constructs an explicit 5-step cycle in complexity space where any scal
 
 ## Paper
 
-**PDF**: `paper/no_go_universal_complexity_scalar_v9.pdf` (27 pages)
-**LaTeX source**: `paper/no_go_universal_complexity_scalar_v9.tex`
+**PDF**: `paper/no_go_complexity_scalar_sudoma_2025.pdf` (29 pages)
+**LaTeX source**: `paper/no_go_complexity_scalar_sudoma_2025.tex`
 **Bibliography**: `paper/nogocomplexity_v5.bib`
 
 **Key Sections**:

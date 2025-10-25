@@ -857,12 +857,12 @@ $X_0'$ & 0.1 & 0.2 & 0.3 & 0.8 \\
 while returning algorithmic complexity to initial value: $\Calg(X_0') = \Calg(X_0) = 0.1$.
 \end{example}
 
-\paragraph{Computational Implementation Note.} The Python toy example (\texttt{code/five\_step\_cycle.py} in the GitHub repository) demonstrates this cycle numerically. For pedagogical clarity, the dynamical complexity proxy $\Cdyn$ uses explicit morphism tracking rather than intrinsic Lyapunov computation, as XOR-based entropy proxies can yield false positives when syndrome encoding creates correlated bit patterns. This limitation is acceptable for proof-of-concept demonstrations; intrinsic measures (e.g., trajectory divergence rates) remain an important direction for robust implementations. Figures~\ref{fig:pillar_evolution}--\ref{fig:contradiction} show the computational results.
+\paragraph{Computational Implementation Note.} The Python toy example (\texttt{code/five\_step\_cycle.py} in the GitHub repository) demonstrates this cycle numerically using intrinsic complexity measures computed from system state without morphism metadata: $\Cdyn$ uses bit pattern mixing (Hamming transitions) combined with quantum eigenvalue spread, $\Cgeom$ uses central void detection via radial distribution analysis. This eliminates circularity concerns identified in external review while maintaining pedagogically clear oracle test validation. Actual measured values ($\delta_{\mathrm{dyn}} = 0.057$, $\sum \delta_\bullet = 1.42$; see Figures~\ref{fig:pillar_evolution}--\ref{fig:contradiction}) differ from illustrative examples above, reflecting the intrinsic proxy implementations.\footnote{For applications requiring higher numerical precision, these proxies could be replaced with computationally intensive alternatives: (i) $\Cdyn$ computed via Lyapunov exponents through full trajectory evolution [$O(T \times N \times D^2)$ vs.\ current $O(N)$], (ii) $\Cgeom$ via persistent homology with Vietoris-Rips complexes [$O(N^3)$ vs.\ current $O(N \log N)$], (iii) $\Cinfo$ via exact von Neumann entropy with full eigendecomposition [$O(D^3)$ vs.\ current $O(D^2)$]. Such refinements would scale runtime from $\sim$3 seconds to $\sim$10--30 minutes while preserving the contradiction structure. Implementation details and complexity analysis are provided in the code repository documentation.} Figures~\ref{fig:pillar_evolution}--\ref{fig:contradiction} show the computational results.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{../figures/pillar_evolution.png}
-\caption{Four-pillar complexity evolution through the 5-step cycle from computational demonstration. Each morphism raises its target pillar. The closing isomorphism $\phi$ returns all pillars to initial values, but $\sum \delta_\bullet = 2.26 > 0$ creates the impossibility contradiction.}
+\caption{Four-pillar complexity evolution through the 5-step cycle from computational demonstration. Each morphism raises its target pillar. The closing isomorphism $\phi$ returns all pillars to initial values, but $\sum \delta_\bullet = 1.42 > 0$ creates the impossibility contradiction (measured from intrinsic complexity proxies; see Computational Implementation Note).}
 \label{fig:pillar_evolution}
 \end{figure}
 
@@ -876,7 +876,7 @@ while returning algorithmic complexity to initial value: $\Calg(X_0') = \Calg(X_
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{../figures/contradiction_diagram.png}
-\caption{Impossibility via cycle contradiction visualized in 4D complexity space. The path $X_0 \to X_1 \to X_2 \to X_3 \to X_4$ accumulates increases $\sum \delta_\bullet = 2.26$, requiring $C^*(X_4) > C^*(X_0) + 2.26$. The closing isomorphism $\phi$ (dashed red) forces $C^*(X_4) = C^*(X_0)$, creating an irresolvable contradiction.}
+\caption{Impossibility via cycle contradiction visualized in 4D complexity space. The path $X_0 \to X_1 \to X_2 \to X_3 \to X_4$ accumulates increases $\sum \delta_\bullet = 1.42$, requiring $C^*(X_4) > C^*(X_0) + 1.42$. The closing isomorphism $\phi$ (dashed red) forces $C^*(X_4) = C^*(X_0)$, creating an irresolvable contradiction (measured from intrinsic complexity proxies).}
 \label{fig:contradiction}
 \end{figure}
 

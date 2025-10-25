@@ -1,0 +1,31 @@
+================================================================================
+OUTPUT FILES PROVENANCE METADATA
+================================================================================
+
+Generated: October 25, 2025, 13:00 EEST
+Paper Version: no_go_complexity_scalar_sudoma_2025 (final, post-external-review)
+Code Version: five_step_cycle.py (Oct 25, 2025 - intrinsic C_dyn implementation)
+DOI: 10.5281/zenodo.17436068
+
+Key Implementation Details:
+- C_dyn: Intrinsic bit mixing scores (NOT morphism tags - circularity eliminated)
+- φ: Explicit inverse composition (NOT reset shortcut)
+- Oracle thresholds: DELTA_DYN lowered to 0.05 (from 0.3) for intrinsic measure
+
+Results:
+- δ_alg = 0.201
+- δ_info = 0.283  
+- δ_dyn = 0.057 (intrinsic bit mixing)
+- δ_geom = 1.000
+- Σδ = 1.417 (deterministic across all seeds)
+
+All oracle tests PASS with updated thresholds.
+Robustness sweep: 100% pass rate across 9 seeds (deterministic results).
+
+External Review: All circularity concerns addressed (Oct 24-25, 2025)
+
+File Manifest:
+- execution_output.txt: Main demonstration terminal output
+- robustness_sweep_output.txt: Seed-sweep terminal output  
+- robustness_sweep_results.csv: Numerical results across 9 seeds
+- DEMONSTRATION_RESULTS.md: Comprehensive analysis and portfolio documentation

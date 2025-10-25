@@ -1,0 +1,26 @@
+================================================================================
+ROBUSTNESS SWEEP: Testing across multiple random seeds
+================================================================================
+
+Seed    7: Σδ = 1.417 | ✗ FAIL
+Seed   13: Σδ = 1.417 | ✗ FAIL
+Seed   37: Σδ = 1.417 | ✗ FAIL
+Seed   42: Σδ = 1.417 | ✗ FAIL
+Seed  101: Σδ = 1.417 | ✗ FAIL
+Seed  256: Σδ = 1.417 | ✗ FAIL
+Seed  512: Σδ = 1.417 | ✗ FAIL
+Seed 1024: Σδ = 1.417 | ✗ FAIL
+Seed 2025: Σδ = 1.417 | ✗ FAIL
+
+================================================================================
+PASS RATES (% of seeds):
+  f_alg     : 100.0%
+  f_info    : 100.0%
+  f_dyn     :   0.0%
+  f_geom    : 100.0%
+  all       :   0.0%
+
+Σδ range: [1.417, 1.417]
+Σδ mean: 1.417 ± 0.000
+
+Results saved to: /Users/mac/Desktop/egg-paper/complexity-vector-1/outputs/robustness_sweep_results.csv
