@@ -81,15 +81,6 @@ See `outputs/DEMONSTRATION_RESULTS.md` for detailed results and analysis.
 - Explicit calculation of all complexity measures
 - Step-by-step derivation of contradiction
 
-**Amendment History**: `docs/NOGO_V8_TO_V9_FINAL_AMENDMENTS.md`
-- Evolution from v8 to v9 (final version)
-- Technical corrections and clarifications
-
-**Review Reports**: `docs/feedback/`
-- Fact-check validation reports
-- Beta reader feedback
-- Revision history
-
 ## Citation
 
 ```bibtex
@@ -98,7 +89,7 @@ See `outputs/DEMONSTRATION_RESULTS.md` for detailed results and analysis.
   author={Sudoma, Oksana},
   year={2025},
   month={10},
-  note={Pending Submission},
+  note={Preprint},
   doi={10.5281/zenodo.17436068},
   url={https://doi.org/10.5281/zenodo.17436068}
 }
@@ -110,12 +101,10 @@ Complexity science often seeks single scalar measures to quantify system complex
 
 ## License
 
-**Code**: MIT License (see `LICENSE`)
-**Paper**: CC BY 4.0 (Creative Commons Attribution 4.0 International)
+MIT License (see `LICENSE`)
 
 You are free to:
-- Share and adapt the code (MIT)
-- Share and adapt the paper with attribution (CC BY 4.0)
+- Share and adapt (MIT)
 
 ## Contact
 
@@ -125,4 +114,4 @@ GitHub: [@boonespacedog](https://github.com/boonespacedog)
 
 ## Acknowledgments
 
-Mathematical formalism developed with AI assistance (Claude, Anthropic). All theoretical insights, hypothesis formulation, and scientific claims are the sole responsibility of the author.
+Mathematical formalism developed with AI assistance. All theoretical insights, hypothesis formulation, and scientific claims are the sole responsibility of the author.
